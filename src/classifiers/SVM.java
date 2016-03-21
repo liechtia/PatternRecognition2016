@@ -12,9 +12,13 @@ import weka.classifiers.functions.LibSVM;
 import weka.core.Instances;
 import weka.core.SelectedTag;
 
-
+/**
+ * Class for the SVM classifiers
+ *
+ */
 public class SVM {
 
+    //constants for the different svm types and kernels 
     public final SelectedTag SVM_C_SVC = new SelectedTag(LibSVM.SVMTYPE_C_SVC, LibSVM.TAGS_SVMTYPE);
     public final SelectedTag SVM_EPSILON_SVR = new SelectedTag(LibSVM.SVMTYPE_EPSILON_SVR, LibSVM.TAGS_SVMTYPE);
     public final SelectedTag SVM_ONE_CLASS= new SelectedTag(LibSVM.SVMTYPE_ONE_CLASS_SVM, LibSVM.TAGS_SVMTYPE);
@@ -42,6 +46,9 @@ public class SVM {
         readArffFile(); 
     }
     
+    /**
+     * Function to read the arff file 
+     */
     private void readArffFile()
     {
         BufferedReader reader;
@@ -65,7 +72,15 @@ public class SVM {
        
     }
     
-    
+    /**
+     * Function to set paramters for the svm 
+     * just c and gamma are set
+     * the other are put to default
+     * @param svmType
+     * @param kernelType
+     * @param c
+     * @param gamma
+     */
     public void  setParameters(SelectedTag svmType, SelectedTag kernelType,  int c, int gamma)
     {
         svm.setSVMType(svmType);
@@ -82,6 +97,19 @@ public class SVM {
         
     }
     
+    /**
+     * Function to set parameter for the svm 
+     * @param svmType
+     * @param kernelType
+     * @param gamma
+     * @param c
+     * @param degree
+     * @param coef
+     * @param nu
+     * @param cacheSize
+     * @param seed
+     * @param epsilon
+     */
     public void  setParameters(SelectedTag svmType, SelectedTag kernelType, int gamma, int c, int degree,  int coef, double nu, double cacheSize, int seed, double epsilon)
     {
         svm.setSVMType(svmType);
@@ -97,6 +125,9 @@ public class SVM {
         
     }
     
+    /**
+     * Function to buld the classifer
+     */
     public void buildClassifier()
     {
         try {
@@ -109,6 +140,10 @@ public class SVM {
         }
     }
     
+    
+    /**
+     * Function to evaluate the model 
+     */
     public void evaluateModel()
     {
         try {
