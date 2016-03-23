@@ -1,12 +1,5 @@
 package classifiers;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import utils.Datapoint;
 import weka.classifiers.Evaluation;
 import weka.classifiers.functions.LibSVM;
 import weka.core.Instances;
@@ -28,48 +21,16 @@ public class SVM {
     public final SelectedTag  KERNEL_RBF = new SelectedTag(LibSVM.KERNELTYPE_RBF, LibSVM.TAGS_KERNELTYPE);
     public final SelectedTag  KERNEL_POLYNOMIAL = new SelectedTag(LibSVM.KERNELTYPE_POLYNOMIAL, LibSVM.TAGS_KERNELTYPE);
     public final SelectedTag  KERNEL_LINEAR = new SelectedTag(LibSVM.KERNELTYPE_LINEAR, LibSVM.TAGS_KERNELTYPE);
-    public final SelectedTag  KERNEL_SIGMOID = new SelectedTag(LibSVM.KERNELTYPE_SIGMOID, LibSVM.TAGS_KERNELTYPE);
-    
-    
+    public final SelectedTag  KERNEL_SIGMOID = new SelectedTag(LibSVM.KERNELTYPE_SIGMOID, LibSVM.TAGS_KERNELTYPE);   
     
     private Instances train;
     private Instances test;
-    private String trainFile;
-    private String testFile;
     private LibSVM svm;
     
-    public SVM(String trainFile, String testFile) {
-        this.trainFile = trainFile;
-        this.testFile = testFile;
-        
+    public SVM(Instances trainInstances, Instances testInstances) {
+    	train = trainInstances;
+    	test = testInstances;
         svm = new LibSVM(); 
-        readArffFile(); 
-    }
-    
-    /**
-     * Function to read the arff file 
-     */
-    private void readArffFile()
-    {
-        BufferedReader reader;
-        try {
-            reader = new BufferedReader(new FileReader(trainFile));
-            train = new Instances(reader);
-            reader.close();
-            
-            reader = new BufferedReader(new FileReader(testFile));
-            test = new Instances(reader);
-            
-            train.setClassIndex(train.numAttributes() -1); //class attribute is last index      
-            test.setClassIndex(train.numAttributes()-1);
-            reader.close();
-            
-        } catch ( IOException e) {
-            System.out.println("An error occured while reading the arff file");
-            System.out.println(e.getMessage());
-            System.exit(-1);
-        }
-       
     }
     
     /**
@@ -81,7 +42,7 @@ public class SVM {
      * @param c
      * @param gamma
      */
-    public void  setParameters(SelectedTag svmType, SelectedTag kernelType,  int c, int gamma)
+    public void  setParameters(SelectedTag svmType, SelectedTag kernelType,  double c, double gamma)
     {
         svm.setSVMType(svmType);
         svm.setKernelType(kernelType);
@@ -110,7 +71,7 @@ public class SVM {
      * @param seed
      * @param epsilon
      */
-    public void  setParameters(SelectedTag svmType, SelectedTag kernelType, int gamma, int c, int degree,  int coef, double nu, double cacheSize, int seed, double epsilon)
+    public void  setParameters(SelectedTag svmType, SelectedTag kernelType, double gamma, double c, int degree,  int coef, double nu, double cacheSize, int seed, double epsilon)
     {
         svm.setSVMType(svmType);
         svm.setKernelType(kernelType);
@@ -144,18 +105,21 @@ public class SVM {
     /**
      * Function to evaluate the model 
      */
-    public void evaluateModel()
+    public double evaluateModel()
     {
         try {
             Evaluation eval = new Evaluation(train);
-            eval.evaluateModel(svm, test);
+            eval.evaluateModel(svm, test);            
             System.out.println(eval.toSummaryString("\nResults\n======\n", false));
+            double total = eval.correct() + eval.incorrect();
+            return total / eval.correct();
         } catch (Exception e) {
             System.out.println("An error occured while evaluating the model");
             System.out.println("Errormessage: " + e.getMessage());
             System.exit(-1);
         }
        
+        return 0.0;
     }
 
 }
