@@ -28,7 +28,7 @@ public class DataReader {
      * returns complete set of training data
      * @return
      */
-    public Instances GetTrainingData(){
+    public Instances getTrainingData(){
     	return train;
     }
     
@@ -36,7 +36,7 @@ public class DataReader {
      * returns final test data
      * @return
      */
-    public Instances GetTestData(){
+    public Instances getTestData(){
     	return test;
     }
     
@@ -46,7 +46,7 @@ public class DataReader {
      * @param foldNumber
      * @return
      */
-    public CrossValidationSet[] GetCrossValidationData(int seedValue, int foldNumber){
+    public CrossValidationSet[] getCrossValidationData(int seedValue, int foldNumber){
     	int folds = foldNumber;
     	int seed = seedValue;
     	Random rand = new Random(seed);

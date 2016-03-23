@@ -37,8 +37,8 @@ public class testSVM {
 		private static  void callSVM(String trainFile, String testFile)
         {
         	DataReader reader = new DataReader(trainFile, testFile);
-        	CrossValidationSet set = new CrossValidationSet(reader.GetTrainingData(), reader.GetTestData());
-        	SVM svm = new SVM(set.GetTrain(), set.GetTest());  
+        	CrossValidationSet set = new CrossValidationSet(reader.getTrainingData(), reader.getTestData());
+        	SVM svm = new SVM(set.getTrain(), set.getTest());  
             int c  = 1;
             int gamma = 0;
             
@@ -56,8 +56,8 @@ public class testSVM {
         private static  void callSvmToGetBestValues(String trainFile, String testFile)
         {        	      	
         	DataReader reader = new DataReader(trainFile, testFile);
-        	CrossValidationSet finalSet = new CrossValidationSet(reader.GetTrainingData(), reader.GetTestData());
-        	CrossValidationSet[] sets = reader.GetCrossValidationData(1, 5);
+        	CrossValidationSet finalSet = new CrossValidationSet(reader.getTrainingData(), reader.getTestData());
+        	CrossValidationSet[] sets = reader.getCrossValidationData(1, 5);
         	int counter = 0;
         	
         	for (int kernel = 0; kernel < 2; kernel++){
@@ -105,7 +105,7 @@ public class testSVM {
 		 */
 		private static void runCalculations(CrossValidationSet set, int counter, int kernel, double cValue,
 				double gammaValue, boolean finalRound) {
-			SVM svm = new SVM(set.GetTrain(), set.GetTest()); 
+			SVM svm = new SVM(set.getTrain(), set.getTest()); 
 			if (kernel == 0){
 				svm.setParameters(svm.SVM_C_SVC, svm.KERNEL_RBF, cValue, gammaValue);	
 			}

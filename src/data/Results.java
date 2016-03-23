@@ -21,8 +21,7 @@ public class Results {
 		this.accuracy = acc;
 		this.finalSet = finalSetTaken;
 		this.kernel = kernelMode;
-	}
-	
+	}	
 	
 	/**
 	 * prints results to a file

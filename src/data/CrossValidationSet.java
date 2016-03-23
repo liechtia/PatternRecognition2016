@@ -18,7 +18,7 @@ public class CrossValidationSet{
 	 * returns training set
 	 * @return
 	 */
-	public Instances GetTrain(){
+	public Instances getTrain(){
 		return train;
 	}
 	
@@ -26,7 +26,7 @@ public class CrossValidationSet{
 	 * returns test set
 	 * @return
 	 */
-	public Instances GetTest(){
+	public Instances getTest(){
 		return test;
 	}
 }
