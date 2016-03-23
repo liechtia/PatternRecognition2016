@@ -57,7 +57,7 @@ public class testSVM {
         {        	      	
         	DataReader reader = new DataReader(trainFile, testFile);
         	CrossValidationSet finalSet = new CrossValidationSet(reader.getTrainingData(), reader.getTestData());
-        	CrossValidationSet[] sets = reader.getCrossValidationData(1, 5);
+        	CrossValidationSet[] sets = reader.getCrossValidationData(1, 10);
         	int counter = 0;
         	
         	for (int kernel = 0; kernel < 2; kernel++){

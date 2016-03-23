@@ -112,7 +112,7 @@ public class SVM {
             eval.evaluateModel(svm, test);            
             System.out.println(eval.toSummaryString("\nResults\n======\n", false));
             double total = eval.correct() + eval.incorrect();
-            return total / eval.correct();
+            return eval.correct() / total;
         } catch (Exception e) {
             System.out.println("An error occured while evaluating the model");
             System.out.println("Errormessage: " + e.getMessage());
