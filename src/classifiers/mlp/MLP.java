@@ -4,7 +4,9 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -30,7 +32,6 @@ public final class MLP {
 	 */
 	public static MLPResult run(double learningRate, String hiddenLayer, int epochs,
 							 Instances train, Instances test) throws Exception {
-		
 		// Create the weka mlp
 		MultilayerPerceptron mlp = new MultilayerPerceptron();
 		
@@ -127,13 +128,18 @@ public final class MLP {
 	private static void saveResult(String experiment, List<String> lines,
 								   Map<Integer,List<MLPResult>> results)
 			throws Exception {
+		String fileName = experiment;
+		Date date = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy-HHmmss");
+		fileName += "-" + sdf.format(date);
+		
 		for (Map.Entry<Integer,List<MLPResult>> entry: results.entrySet()) {
 			List<MLPResult> nResult = entry.getValue();
 			for (MLPResult r: nResult) {
 				lines.add(entry.getKey() + "," + r.getErrorRate());	
 			}
 		}
-		Path file = Paths.get("mlp/experiments/exporttest.txt");
+		Path file = Paths.get("mlp/experiments/" + fileName + ".csv");
 		Files.write(file, lines, Charset.forName("UTF-8"));
 	}
 	
