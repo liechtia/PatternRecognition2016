@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 
+import main.Helpers;
+import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.Instances;
@@ -87,15 +89,14 @@ public final class MLP {
 	
 	/**
 	 * Experiment with different number of nodes in the hidden layer.
-	 * Stratified cross validation.
+	 * In addition, it validates using stratified cross validation.
 	 */
-	public static Map<Integer,List<MLPResult>> expHiddenLayer(double learningRate, int epochs,
-															  Instances data, int folds,
-															  int[] hiddenLayer) throws Exception {
+	public static Map<Integer,List<MLPResult>> experimentHiddenLayer(double learningRate,
+			int[] hiddenLayers, int epochs, Instances data, int folds) throws Exception {
 		Map<Integer,List<MLPResult>> results = new TreeMap<Integer,List<MLPResult>>();
-		int start = hiddenLayer[0];
-		int stop = hiddenLayer[1];
-		int increment = hiddenLayer[2];
+		int start = hiddenLayers[0];
+		int stop = hiddenLayers[1];
+		int increment = hiddenLayers[2];
 		
 		Random rand = new Random(0);
 		data.randomize(rand);
@@ -123,11 +124,61 @@ public final class MLP {
 		return results;
 	}
 	
+	/**
+	 * Experiment with growing number of epochs. It trains the an mlp classifier
+	 * and store the model everytime an epoch has passed.
+	 * In addition, it validates using against a given test set.
+	 */
+	public static Map<Integer,MLPResult> experimentEpochs(double learningRate,
+			String hiddenLayer, int epochs, Instances train, Instances test) throws Exception {
+		// Create the weka mlp
+		MultilayerPerceptronCustom mlp = new MultilayerPerceptronCustom();
+		
+		// Set parameters
+		
+		// When validating (with Evaluation) it stops the validation if this nr
+		// of consecutive errors is reached
+		mlp.setValidationThreshold(100);
+		mlp.setReset(false); // Don't allow reset
+		mlp.setMomentum(0.0);
+		mlp.setLearningRate(learningRate);
+		mlp.setHiddenLayers(hiddenLayer);
+		mlp.setTrainingTime(epochs);
+		
+		// Train the mlp
+		mlp.buildClassifier(train);
+		
+		// Validate
+		Map<Integer,MLPResult> results = new TreeMap<Integer,MLPResult>();
+		for (int i = 1; i < 11; i++) {
+			Classifier c = Helpers.loadClassifier("mlp/temp/" + i + ".model");
+			Evaluation eval = new Evaluation(train);
+			eval.evaluateModel(c, test);
+			MLPResult r = new MLPResult(eval.errorRate(), eval.toSummaryString(), c);
+			results.put(i, r);
+		}
+		
+		// Save result
+		List<String> lines = new ArrayList<String>();
+		lines.add("# Experiment with validation on a test set");
+		lines.add("");
+		lines.add("# Variable: number of training epochs passed from training start");
+		lines.add("# Learning rate: " + learningRate);
+		lines.add("# Nodes in the hidden layer: " + hiddenLayer);
+		lines.add("# Epochs: " + epochs);
+		lines.add("# Train set size: " + train.numInstances());
+		lines.add("# Test set size: " + test.numInstances());
+		lines.add("");
+		lines.add("epochs,error");
+		saveResultEpochs("epochs", lines, results);
+		
+		return results;
+	}
+	
 	// Helper methods
 	
 	private static void saveResult(String experiment, List<String> lines,
-								   Map<Integer,List<MLPResult>> results)
-			throws Exception {
+								   Map<Integer,List<MLPResult>> results) throws Exception {
 		String fileName = experiment;
 		Date date = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy-HHmmss");
@@ -143,7 +194,22 @@ public final class MLP {
 		Files.write(file, lines, Charset.forName("UTF-8"));
 	}
 	
-//	private static void saveModel() {
-//		
-//	}
+	private static void saveResultEpochs(String experiment, List<String> lines,
+								   Map<Integer,MLPResult> results) throws Exception {
+		String fileName = experiment;
+		Date date = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy-HHmmss");
+		fileName += "-" + sdf.format(date);
+		
+		for (Map.Entry<Integer,MLPResult> entry: results.entrySet()) {
+			MLPResult r = entry.getValue();
+			lines.add(entry.getKey() + "," + r.getErrorRate());
+		}
+		Path file = Paths.get("mlp/experiments/" + fileName + ".csv");
+		Files.write(file, lines, Charset.forName("UTF-8"));
+	}
+	
+	private static void saveModel() {
+		//TODO:
+	}
 }

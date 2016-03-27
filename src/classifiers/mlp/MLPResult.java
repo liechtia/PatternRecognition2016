@@ -1,5 +1,6 @@
 package classifiers.mlp;
 
+import weka.classifiers.Classifier;
 import weka.classifiers.functions.MultilayerPerceptron;
 
 /**
@@ -12,9 +13,9 @@ import weka.classifiers.functions.MultilayerPerceptron;
 public class MLPResult {
 	private double errorRate;
 	private String summary;
-	private MultilayerPerceptron model;
+	private Classifier model;
 	
-	public MLPResult(double errorRate, String summary, MultilayerPerceptron model) {
+	public MLPResult(double errorRate, String summary, Classifier model) {
 		this.errorRate = errorRate;
 		this.summary = summary;
 		this.model = model;
@@ -28,7 +29,7 @@ public class MLPResult {
 		return summary;
 	}
 
-	public MultilayerPerceptron getModel() {
+	public Classifier getModel() {
 		return model;
 	}
 }
