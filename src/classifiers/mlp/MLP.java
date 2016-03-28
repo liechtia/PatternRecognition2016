@@ -129,7 +129,7 @@ public final class MLP {
 	 * and store the model everytime an epoch has passed.
 	 * In addition, it validates using against a given test set.
 	 */
-	public static Map<Integer,MLPResult> experimentEpochs(double learningRate,
+	public static List<double[]> experimentEpochs(double learningRate,
 			String hiddenLayer, int epochs, Instances train, Instances test) throws Exception {
 		// Create the weka mlp
 		MultilayerPerceptronCustom mlp = new MultilayerPerceptronCustom();
@@ -149,18 +149,23 @@ public final class MLP {
 		mlp.buildClassifier(train);
 		
 		// Validate
-		Map<Integer,MLPResult> results = new TreeMap<Integer,MLPResult>();
-		for (int i = 1; i < 11; i++) {
+		List<double[]> results = new ArrayList<double[]>();
+		for (int i = 1; i < epochs; i++) {
 			Classifier c = Helpers.loadClassifier("mlp/temp/" + i + ".model");
 			Evaluation eval = new Evaluation(train);
+			
+			eval.evaluateModel(c, train);
+			double trainError = eval.errorRate();
+			
 			eval.evaluateModel(c, test);
-			MLPResult r = new MLPResult(eval.errorRate(), eval.toSummaryString(), c);
-			results.put(i, r);
+			double testError = eval.errorRate();
+			
+			results.add(new double[]{i,trainError,testError});
 		}
 		
 		// Save result
 		List<String> lines = new ArrayList<String>();
-		lines.add("# Experiment with validation on a test set");
+		lines.add("# Experiment with validation on train set and on a test set");
 		lines.add("");
 		lines.add("# Variable: number of training epochs passed from training start");
 		lines.add("# Learning rate: " + learningRate);
@@ -169,7 +174,7 @@ public final class MLP {
 		lines.add("# Train set size: " + train.numInstances());
 		lines.add("# Test set size: " + test.numInstances());
 		lines.add("");
-		lines.add("epochs,error");
+		lines.add("epochs,trainerror,testerror");
 		saveResultEpochs("epochs", lines, results);
 		
 		return results;
@@ -195,15 +200,14 @@ public final class MLP {
 	}
 	
 	private static void saveResultEpochs(String experiment, List<String> lines,
-								   Map<Integer,MLPResult> results) throws Exception {
+								   List<double[]> results) throws Exception {
 		String fileName = experiment;
 		Date date = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy-HHmmss");
 		fileName += "-" + sdf.format(date);
 		
-		for (Map.Entry<Integer,MLPResult> entry: results.entrySet()) {
-			MLPResult r = entry.getValue();
-			lines.add(entry.getKey() + "," + r.getErrorRate());
+		for (double[] r: results) {
+			lines.add((int) r[0] + "," + r[1] + "," + r[2]);	
 		}
 		Path file = Paths.get("mlp/experiments/" + fileName + ".csv");
 		Files.write(file, lines, Charset.forName("UTF-8"));

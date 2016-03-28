@@ -1,10 +1,9 @@
 package main;
 
 import java.io.FileReader;
-import java.util.Map;
+import java.util.List;
 
 import classifiers.mlp.MLP;
-import classifiers.mlp.MLPResult;
 import weka.core.Instances;
 
 public final class LauncherMLP {
@@ -21,10 +20,9 @@ public final class LauncherMLP {
 		Instances test = new Instances(testreader);
 		test.setClassIndex(0);
 
-		Map<Integer,MLPResult> results = MLP.experimentEpochs(0.1, "80", 60, train, test);
-		for (Map.Entry<Integer,MLPResult> entry: results.entrySet()) {
-			MLPResult nResult = entry.getValue();
-			System.out.println(entry.getKey() + " - " + nResult.getErrorRate());
+		List<double[]> results = MLP.experimentEpochs(0.1, "80", 60, train, test);
+		for (double[] r: results) {
+			System.out.println((int) r[0] + "," + r[1] + "," + r[2]);	
 		}
 	}
 }
