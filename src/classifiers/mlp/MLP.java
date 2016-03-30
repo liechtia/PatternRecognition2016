@@ -150,7 +150,7 @@ public final class MLP {
 		
 		// Validate
 		List<double[]> results = new ArrayList<double[]>();
-		for (int i = 1; i < epochs; i++) {
+		for (int i = 1; i <= epochs; i++) {
 			Classifier c = Helpers.loadClassifier("mlp/temp/" + i + ".model");
 			Evaluation eval = new Evaluation(train);
 			
