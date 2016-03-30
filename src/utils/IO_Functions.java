@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Class to read and write to files
@@ -95,6 +96,8 @@ public class IO_Functions {
                 classes.add(datapoints.get(i).getLabel());
         }
         
+        Collections.sort(classes);
+        
         try {
             fout = new File(outputFileName + ".arff");
             fos = new FileOutputStream(fout);
@@ -110,12 +113,19 @@ public class IO_Functions {
                 bw.newLine();
             }
             
-            bw.write("@attribute class{");
-            for(int i = 0; i < classes.size(); i++)
+          //  bw.write("@attribute class{");
+            String classesString = "@attribute class{";
+            for(int i = 0; i < classes.size()-1; i++)
             {
-                bw.write(classes.get(i) + ",");
+                classesString += classes.get(i) + ",";
+               // bw.write(classes.get(i) + ",");
             }
-            bw.write("}");
+            //int t= classes.get(classes.size()-1);
+            //bw.write(classes.get(classes.size()-1));
+            //bw.write("}");
+            classesString += classes.get(classes.size()-1) +"}"; 
+            bw.write(classesString);
+            
             
             bw.newLine();
             bw.write("@data");

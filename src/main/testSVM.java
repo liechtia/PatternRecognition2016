@@ -7,6 +7,8 @@ import data.*;
 import utils.Datapoint;
 import utils.IO_Functions;
 import utils.FeatureExtraction;
+import weka.core.Instance;
+import weka.core.Instances;
 
 /**
  * Class to test the SVM classifier
@@ -18,14 +20,19 @@ public class testSVM {
         private static double[] gammas = { 0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1 };
 	
         public static void main(String[] args) {
-            String traningsFile = "data/train.csv";
+            String traningsFile = "data/trainAll.csv";
             String testFile = "data/test.csv";
                     
            //read the files and convert to arff 
            String arffTrain = readDataAndConvertToArff(traningsFile);
            String arffTest = readDataAndConvertToArff(testFile); 
            
-           callSvmToGetBestValues(arffTrain, arffTest);            
+           double startTime = System.currentTimeMillis();
+           callSvmToGetBestValues(arffTrain, arffTest);
+           //callSVM(arffTrain, arffTest); 
+           double endTime = System.currentTimeMillis();
+           
+           System.out.println((endTime-startTime)/1000.0/60);
         }
         
         /**
@@ -56,9 +63,27 @@ public class testSVM {
         private static  void callSvmToGetBestValues(String trainFile, String testFile)
         {        	      	
         	DataReader reader = new DataReader(trainFile, testFile);
-        	CrossValidationSet finalSet = new CrossValidationSet(reader.getTrainingData(), reader.getTestData());
-        	CrossValidationSet[] sets = reader.getCrossValidationData(1, 10);
-        	int counter = 0;
+        	Instances instances  = reader.getKTrainData(5000);
+        	CrossValidation cv = new CrossValidation(new Instances(instances));
+        	System.out.println(instances.numInstances());
+        	Result result = cv.doCV(10);
+        	
+        	
+        	Instances train = reader.getTrainingData();
+        	Instances test = reader.getTestData(); 
+            SVM svm = new SVM(train, test);  
+            double c  = result.getC();
+            double gamma = result.getGamma();
+            
+            //try different kernels and c and gamma values 
+            svm.setParameters(svm.SVM_C_SVC, svm.KERNEL_RBF, c, gamma);
+            svm.buildClassifier();
+            svm.evaluateModel();
+        	
+        	
+        //	CrossValidationSet finalSet = new CrossValidationSet(reader.getTrainingData(), reader.getTestData());
+        //	CrossValidationSet[] sets = reader.getCrossValidationData(1, 10);
+        /*	int counter = 0;
         	
         	for (int kernel = 0; kernel < 2; kernel++){
         		for (double cValue : cs){
@@ -91,7 +116,7 @@ public class testSVM {
         	}
         	
         	//add your own folder for results here ;) 
-        	Results.printToFile(results, "C:/Users/Andrea/Desktop/results.txt");
+        	Results.printToFile(results, "C:/Users/Andrea/Desktop/results.txt");*/
         }
 
 		/**
@@ -128,12 +153,12 @@ public class testSVM {
             ArrayList<Datapoint> datapoints = IO_Functions.readCsvFile(file, 0, ",");
             
       
-            double[] reducesValues;
+            int[] reducesValues;
             for(int i = 0; i < datapoints.size(); i++)
             {
                 //reduce the features for the image data 
                 reducesValues = FeatureExtraction.extracImageFeatures(imageLength, imageHeight, datapoints.get(i).getValues());
-                datapoints.get(i).setValues(reducesValues);
+               datapoints.get(i).setValues(reducesValues);
             }
             
             return IO_Functions.convertToArffFile(fileName, "svm", datapoints); 

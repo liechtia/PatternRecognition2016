@@ -15,27 +15,41 @@ public class FeatureExtraction{
         * @param values
         * @return
         */
-    public static double[] extracImageFeatures(int length, int height, double[]values)
+    public static int[] extracImageFeatures(int length, int height, int[]values)
     {
-        double[] col;
-        double[] reducedValues = new double[4*length];
-        int k = 0;
+        int[] histogram = new int[length+height];
+   
+        int blackPixels = 0;
+            
         for(int i = 0; i < length; i++)
         {
-            col = new double[height];
             for(int j = 0; j < height; j++)
             {
-                col[j] = values[i+j*4];
+                if(values[i+j*length] != 0)
+                {         
+                    blackPixels += 1;
+                }
             }
-            
-            reducedValues[k] = getAverageGreyValue(col);
-            reducedValues[k+1] = UpperMostPixel(col);
-            reducedValues[k+2] = LowerMostPixel(col);
-            reducedValues[k+3] = numberBWTransitions(col);
-            k += 4;
-            
-        }         
-         return reducedValues;
+            histogram[i] = blackPixels;
+            blackPixels = 0;
+        }
+        
+        for(int i = 0; i < height; i++)
+        {
+            for(int j = 0; j < length; j++)
+            {
+                if(values[i*length+j] != 0)
+                {         
+                    blackPixels += 1;
+                }
+            }
+            histogram[length+i] = blackPixels;
+            blackPixels = 0;
+        }
+        
+
+           
+         return histogram;
       
     }
 

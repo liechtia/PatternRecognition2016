@@ -1,5 +1,7 @@
 package classifiers;
 
+import java.util.Arrays;
+
 import weka.classifiers.Evaluation;
 import weka.classifiers.functions.LibSVM;
 import weka.core.Instances;
@@ -44,6 +46,8 @@ public class SVM {
      */
     public void  setParameters(SelectedTag svmType, SelectedTag kernelType,  double c, double gamma)
     {
+
+        
         svm.setSVMType(svmType);
         svm.setKernelType(kernelType);
         svm.setDegree(3); //D
@@ -52,9 +56,12 @@ public class SVM {
         svm.setNu(0.5); //N
         svm.setCacheSize(40.0);
         svm.setSeed(1);                
-        svm.setEps(0.00001);
-        
+        svm.setEps(0.001);
         svm.setCost(c);
+        
+       
+        
+        
         
     }
     
@@ -83,6 +90,8 @@ public class SVM {
         svm.setSeed(seed);                
         svm.setEps(epsilon);
         svm.setCost(c);
+        
+      
         
     }
     
