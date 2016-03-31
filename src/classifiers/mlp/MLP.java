@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 
-import main.Helpers;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.functions.MultilayerPerceptron;
