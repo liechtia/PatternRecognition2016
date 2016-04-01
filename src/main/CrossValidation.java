@@ -1,250 +1,84 @@
 package main;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import classifiers.SVM;
-import weka.core.Instances;
-import weka.core.Debug.Random;
-import data.CrossValidationSet;
-import data.Result;
-import data.Results;
-
-import java.io.PrintStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 
-public class CrossValidation{
+import weka.classifiers.Evaluation;
+import classifiers.SVM;
+import data.CrossValidationSet;
 
-    private Instances train;
-    
-    
-    
-    public CrossValidation(Instances train ) {
-        this.train = train; 
-        System.out.println(train.numInstances());
-    }
-    
-    private float pow(int a, double b)
+
+public class CrossValidation implements Runnable
+{
+     CrossValidationSet[] cvSets;
+     double c;
+     double gamma;
+     double acc;
+     double powC;
+     double powGamma;
+     int k; 
+     private String kernel;
+     
+    public CrossValidation(CrossValidationSet[] cvSets, String kernel, double c, double powC, double gamma, double powGamma, int k)
     {
-        float p = a;
+        this.cvSets = cvSets;
+        this.c = c; 
+        this.gamma = gamma;
+        this.k = k; 
         
-        if(b<0)
-        {
-            return 1/(float)Math.pow(a, -1*b);
-        }
-        
-        else return (float) Math.pow(a,b);
-            
+        this.powC = powC;
+        this.powGamma = powGamma; 
+        this.kernel = kernel;
     }
     
-    public Result doCV(int k)
+    public double getAcc(){
+        return this.acc;
+    }
+    
+    public double getC() {
+        return this.c;
+    }
+    
+    public double getGamma()
     {
-         int cMin = -5;
-         int cMax = 15;
-         int gammaMin = -15;
-         int gammaMax = 5; 
-        Result resultBigGrid = cv(k, cMin, cMax, gammaMin, gammaMax, 1);
-
-       Result resultFineGrid = cv(k, resultBigGrid.getPowC()-1, resultBigGrid.getPowC()+1, resultBigGrid.getPowGamma()-1, resultBigGrid.getPowGamma()+1, 0.25);
-      
-        
-        return resultFineGrid; 
+        return this.gamma; 
     }
     
-    private Result cv(int k, double cMin, double cMax, double gammaMin, double gammaMax, double intervall)
+
+    public double getPowC() {
+        return this.powC;
+    }
+    
+    public double getPowGamma()
     {
-        CrossValidationSet[] cvSets =  generateCvSet(1,k); 
-        
-        HashMap<Double,Float> cValues = new HashMap<Double, Float>();
-        HashMap<Double,Float> gammaValues = new HashMap<Double, Float>();
-        
-        double j = cMin; 
-        while(j <= cMax)
-        {
-            
-            cValues.put(j, pow(2,j));
-            j += intervall;
-        }
-        
-        j = gammaMin;
-        while (j <= gammaMax)
-        {
-            gammaValues.put(j, pow(2,j));
-            j += intervall;
-        }
-
-        ArrayList<Result> results = new ArrayList<Result>(); 
-        
-      int numberOfThreads = 5; 
-       
-        for(double cKey : cValues.keySet())
-        {
-            float c = cValues.get(cKey);
-            double powC= cKey;
-            System.out.println(cKey);
-            
-            Object[] keys = gammaValues.keySet().toArray(); 
-            for(int i = 0; i < keys.length; i++)
-            {
-              
-                PrintStream originalStream = System.out;
-
-                PrintStream dummyStream    = new PrintStream(new OutputStream(){
-                    public void write(int b) {
-                        //NO-OP
-                    }
-                });
-                System.setOut(dummyStream);
-                
-                if(i+numberOfThreads > keys.length)
-                    numberOfThreads = keys.length -i; 
-                
-                Thread[] threads = new Thread[numberOfThreads];
-                calculateSVM[] svms = new calculateSVM[numberOfThreads];
-                for(int t =0 ; t < threads.length; t++ )
-                {
-                    calculateSVM cv1 = new calculateSVM(cvSets, c, powC, gammaValues.get(keys[i+t]), (double) keys[i+t], k);
-                    Thread t1 = new Thread(cv1);
-                    t1.start();
-                    threads[t] = t1; 
-                    svms[t] = cv1; 
-                }
-                               
-                i=i+numberOfThreads;
-               
-                try {
-                    
-                    for(int t = 0; t < threads.length; t++)
-                    {
-                        threads[t].join();
-                        
-                        results.add(new Result( svms[t].getC(),  svms[t].getPowC(),  svms[t].getGamma(), svms[t].getPowGamma(),  svms[t].getAcc(), k)); 
-                    }
-                   
-
-                    
-                    System.setOut(originalStream);
-
-                    
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-              
-                
-            }
-
-        }
-        
-        Result result = getBestParameters(results);
-                
-        System.out.println(result.getAcc());
-        System.out.println(result.getC() + " (2^" + result.getPowC() + ")");
-        System.out.println(result.getGamma()+ " (2^" + result.getPowGamma() + ")");
-        
-        return result;
-        
-        
+        return this.powGamma;
     }
     
-
-    
-    private Result getBestParameters(ArrayList<Result> results)
+    @Override
+    public void run()
     {
-        double accBest = 0;
-        Result resultBest = null; 
-        
-        for(Result result : results)
+        double accSum= 0; 
+        System.out.println("c: " + c + " gamma: " + gamma);
+        for(int i = 0; i < k; i++)
         {
-            if(result.getAcc() > accBest)
-            {
-                resultBest = result;
-                accBest = result.getAcc();
-            }
+            accSum += callSVM(cvSets[i], c, gamma);
         }
         
-        return resultBest; 
+        this.acc = accSum/k; 
+
     }
     
-   
-    
-   
-    
+    private double callSVM(CrossValidationSet set, double c, double gamma)
+    {
+        SVM svm = new SVM(set.getTrain(), set.getTest());  
+        svm.setParameters(svm.SVM_C_SVC, kernel, c, gamma);
+        svm.buildClassifier();
+        Evaluation eval = svm.evaluateModel();
+        double accN =eval.correct() / (eval.correct() + eval.incorrect());
 
-   
-
-  
-    
-    /**
-     * function to return cross validation sets
-     * @param seedValue
-     * @param foldNumber
-     * @return
-     */
-    private CrossValidationSet[] generateCvSet(int seedValue, int foldNumber){
-        int folds = foldNumber;
-        int seed = seedValue;
-        Random rand = new Random(seed);
-        Instances randData = new Instances(train);
-        randData.randomize(rand);
-        CrossValidationSet[] sets = new CrossValidationSet[folds];
-        
-        for (int n = 0; n < folds; n++) {
-            Instances trainSet = randData.trainCV(folds, n);
-            Instances testSet = randData.testCV(folds, n);
-            sets[n] = new CrossValidationSet(trainSet, testSet);
-        }
-        
-        return sets;
+           
+        return accN;
     }
-    
-    
-    /**
-     * prints results to a file
-     * @param results
-     * @param filePath
-     */
-    public static void printToFile(ArrayList<Results> results, String filePath){
-        PrintWriter writer;
-        try {
-            File file = new File(filePath);         
-            writer = new PrintWriter(file);
 
-            for (Results result : results){
-                if (!result.finalSet){
-                    if (result.kernel == 0){
-                        writer.println(String.format("C: %s - Gamma: %s - Accuracy: %s - Kernel: rbf", result.c, result.gamma, result.accuracy));
-                    }
-                    else{
-                        writer.println(String.format("C: %s - Gamma: %s - Accuracy: %s - Kernel: linear", result.c, result.gamma, result.accuracy));
-                    }
-                    
-                }
-                else{
-                    writer.println("***********************FINAL RESULT********************************");
-                    if (result.kernel == 0){
-                        writer.println(String.format("C: %s - Gamma: %s - Accuracy: %s - Kernel: rbf", result.c, result.gamma, result.accuracy));
-                    }
-                    else{
-                        writer.println(String.format("C: %s - Gamma: %s - Accuracy: %s - Kernel: linear", result.c, result.gamma, result.accuracy));
-                    }
-                    writer.println("*******************************************************************");
-                }
-            }
-            
-            writer.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
     
-    
-
-
 }
-
-

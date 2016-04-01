@@ -3,12 +3,17 @@ package utils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import weka.classifiers.Evaluation;
+import data.Result;
 
 /**
  * Class to read and write to files
@@ -150,5 +155,81 @@ public class IO_Functions {
         } 
         
         return outputFileName + ".arff";
+    }
+    
+    public static void printFinalResult(Evaluation eval, String filePath, String kernel, double c, double gamma)
+    {
+
+        File fout;
+        FileOutputStream fos;
+        BufferedWriter bw;
+        try {
+            fout = new File(filePath + "FinalResult_" + kernel + ".txt");
+            fos = new FileOutputStream(fout);
+            bw = new BufferedWriter(new OutputStreamWriter(fos));
+            
+            bw.write("Kernel: " + kernel);
+            bw.write("C-Value: 2^" + c);
+            bw.write("Gamma-Value: 2^" + gamma);
+            bw.newLine();
+            bw.newLine();
+            bw.write(eval.toSummaryString("\nResults\n======\n", false));
+            bw.close();
+        }
+        catch (IOException e) {
+            System.out.println("An error occured while writing the final result file");
+            System.exit(-1); 
+        } 
+        
+    }
+        
+    /**
+     * prints results to a file
+     * @param results
+     * @param filePath
+     */
+    public static void printToFile(ArrayList<Result> results, String filePath, String kernel, int cvFolds, int numberOfInstances){
+        File fout;
+        FileOutputStream fos;
+        BufferedWriter bw;
+        try {
+            fout = new File(filePath + "/Result_" +kernel + "_" + cvFolds + "_" + numberOfInstances + ".txt");
+            fos = new FileOutputStream(fout);
+            bw = new BufferedWriter(new OutputStreamWriter(fos));
+            bw.write("====================================================================================");
+            bw.newLine();
+            bw.write("Kernel: " + kernel);
+            bw.newLine();
+            bw.write("Cross Validation Folds: " + cvFolds);
+            bw.newLine();
+            bw.write("Number of instances: " + numberOfInstances); 
+            bw.newLine();
+            bw.write("====================================================================================");
+            bw.newLine();
+            bw.newLine();
+            
+
+            for (Result result : results){
+  
+                   bw.write(String.format("C: %f (2^%f)", result.getC(), result.getPowC()));
+                   bw.newLine();
+                   bw.write(String.format("Gamma: %f (2%f)", result.getGamma(), result.getPowGamma()));
+                   bw.newLine();
+                   bw.write(String.format("Accuracy: %f %%", result.getAcc()*100));
+                   bw.newLine();
+                   bw.newLine();
+
+                }
+                
+            
+            bw.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occured while writing the result file");
+            System.out.println("Errormessage: " + e.getMessage());
+            
+        } catch (IOException e) {
+            System.out.println("An error occured while writing the result file");
+            System.out.println("Errormessage: " + e.getMessage());
+        }
     }
 }
