@@ -1,5 +1,10 @@
 package data;
 
+/**
+ * Class to save a result for an evaluation for an SVM 
+ * @author user
+ *
+ */
 public class Result {
 
     private double c;
@@ -15,9 +20,7 @@ public class Result {
         this.gamma = gamma;
         this.acc = acc;
         this.powC = powC;
-        this.powGamma = powGamma; 
-    
-        
+        this.powGamma = powGamma;   
     }
 
 

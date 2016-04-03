@@ -157,6 +157,14 @@ public class IO_Functions {
         return outputFileName + ".arff";
     }
     
+    /**
+     * Function to write the final results to a file
+     * @param eval - Evaluation of the classifier
+     * @param filePath - the path to write the file to
+     * @param kernel - the kernel which was used
+     * @param c - the c-Value which was used
+     * @param gamma - the gamma value which was used
+     */
     public static void printFinalResult(Evaluation eval, String filePath, String kernel, double c, double gamma)
     {
 
@@ -183,11 +191,14 @@ public class IO_Functions {
         
     }
         
-    /**
-     * prints results to a file
-     * @param results
-     * @param filePath
-     */
+   /**
+    * Print the result of the cross-validation for one kernel to a file
+    * @param results - The Results
+    * @param filePath - the path to write the file to
+    * @param kernel - The kernel which was used
+    * @param cvFolds - how many cross-validation folds where used
+    * @param numberOfInstances - how many instances for the cv where used 
+    */
     public static void printToFile(ArrayList<Result> results, String filePath, String kernel, int cvFolds, int numberOfInstances){
         File fout;
         FileOutputStream fos;

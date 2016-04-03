@@ -7,24 +7,28 @@ import weka.classifiers.Evaluation;
 import classifiers.SVM;
 import data.CrossValidationSet;
 
-
+/**
+ * Class to run one cross-validation for one gamma-c-value pair
+ * Implements Runnable the run more than one cross-validation in parallel
+ * @author user
+ *
+ */
 public class CrossValidation implements Runnable
 {
-     CrossValidationSet[] cvSets;
-     double c;
-     double gamma;
-     double acc;
-     double powC;
-     double powGamma;
-     int k; 
+    private CrossValidationSet[] cvSets;
+     private double c;
+     private double gamma;
+     private double acc;
+     private double powC;
+     private double powGamma;
      private String kernel;
      
-    public CrossValidation(CrossValidationSet[] cvSets, String kernel, double c, double powC, double gamma, double powGamma, int k)
+    public CrossValidation(CrossValidationSet[] cvSets, String kernel, double c, double powC, double gamma, double powGamma)
     {
         this.cvSets = cvSets;
         this.c = c; 
         this.gamma = gamma;
-        this.k = k; 
+
         
         this.powC = powC;
         this.powGamma = powGamma; 
@@ -59,12 +63,13 @@ public class CrossValidation implements Runnable
     {
         double accSum= 0; 
         System.out.println("c: " + c + " gamma: " + gamma);
-        for(int i = 0; i < k; i++)
+        for(int i = 0; i < cvSets.length; i++)
         {
             accSum += callSVM(cvSets[i], c, gamma);
         }
         
-        this.acc = accSum/k; 
+        //calculate average accuracy 
+        this.acc = accSum/cvSets.length; 
 
     }
     

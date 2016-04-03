@@ -52,11 +52,15 @@ public class FindBestParameters{
          int gammaMax = 5; 
         System.out.println("Test from c=2^-5 to 2^15 and gamma=2^-15 to 2^5 with intervall 1");    
         
+        //first test with a bigger grid
+        //use c values from 2^cmin to 2^cmax with an intervall of 1 
        Result resultBigGrid = cv(k, cMin, cMax, gammaMin, gammaMax, 1);
        System.out.println("Best C-Value: 2^" + resultBigGrid.getPowC());
        System.out.println("Best Gamma-Value: 2^" + resultBigGrid.getPowGamma());
        System.out.println();
        System.out.println("Test finer grid");
+      
+       //make the grid finer --> take best power of 2 and test in the range -1, +1 
        Result resultFineGrid = cv(k, resultBigGrid.getPowC()-1, resultBigGrid.getPowC()+1, resultBigGrid.getPowGamma()-1, resultBigGrid.getPowGamma()+1, 0.25);
        System.out.println("Best C-Value: 2^" + resultFineGrid.getPowC());
        System.out.println("Best Gamma-Value: 2^" + resultFineGrid.getPowGamma());
@@ -65,17 +69,34 @@ public class FindBestParameters{
         return resultFineGrid; 
     }
     
+    /**
+     * Function to run a cross-validations for all possible c-gamma-valuesfor one kernel 
+     * @param k
+     * @param cMin
+     * @param cMax
+     * @param gammaMin
+     * @param gammaMax
+     * @param intervall
+     * @return
+     */
     private Result cv(int k, double cMin, double cMax, double gammaMin, double gammaMax, double intervall)
     {
         CrossValidationSet[] cvSets =  generateCvSet(1,k); 
+        ArrayList<Result> results = new ArrayList<Result>(); 
+        
+        //use threads to speed the process up
+        Thread[] threads;
+        int numberOfThreads = 5; 
         
         HashMap<Double,Float> cValues = new HashMap<Double, Float>();
         HashMap<Double,Float> gammaValues = new HashMap<Double, Float>();
         
+        //calculate the c-values and gamma-values 
+        //c-values are caluclated with 2^x with x elem [cMin;cMax]
+        //gamma-values are calculated with 2^x with x elem [gammaMin; gammaMax]
         double j = cMin; 
         while(j <= cMax)
-        {
-            
+        { 
             cValues.put(j, pow(2,j));
             j += intervall;
         }
@@ -87,36 +108,34 @@ public class FindBestParameters{
             j += intervall;
         }
 
-        ArrayList<Result> results = new ArrayList<Result>(); 
-        
-      int numberOfThreads = 5; 
-       
+
         for(double cKey : cValues.keySet())
         {
             float c = cValues.get(cKey);
             double powC= cKey;
+            
             
             Object[] keys = gammaValues.keySet().toArray(); 
             System.out.println("Pair C-Value: 2^" + powC + " with all gamma values");
             for(int i = 0; i < keys.length; i++)
             {
 
+                //suppress output of the classifier
                 PrintStream originalStream = System.out;
-
                 PrintStream dummyStream    = new PrintStream(new OutputStream(){
                     public void write(int b) {
-                        //NO-OP
                     }
                 });
                 System.setOut(dummyStream);
                 if(i+numberOfThreads > keys.length)
                     numberOfThreads = keys.length -i; 
                 
-                Thread[] threads = new Thread[numberOfThreads];
+                //let numberOfThreads cross-validation run in parallel 
+                threads = new Thread[numberOfThreads];
                 CrossValidation[] svms = new CrossValidation[numberOfThreads];
                 for(int t =0 ; t < threads.length; t++ )
                 {
-                    CrossValidation cv1 = new CrossValidation(cvSets, kernel, c, powC, gammaValues.get(keys[i+t]), (double) keys[i+t], k);
+                    CrossValidation cv1 = new CrossValidation(cvSets, kernel, c, powC, gammaValues.get(keys[i+t]), (double) keys[i+t]);
                     Thread t1 = new Thread(cv1);
                     t1.start();
                     threads[t] = t1; 
@@ -134,32 +153,28 @@ public class FindBestParameters{
                         results.add(new Result( svms[t].getC(),  svms[t].getPowC(),  svms[t].getGamma(), svms[t].getPowGamma(),  svms[t].getAcc())); 
                     }
                     System.setOut(originalStream);
-
-                    
-                 
-
-                    
+  
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
-                }
-              
-                
             }
 
+            }
         }
         
-        Result result = getBestParameters(results);
-        IO_Functions.printToFile(results, "data", kernel, k, train.numInstances());      
+        Result result = evaluateResults(results);
+        IO_Functions.printToFile(results, "svm/", kernel, k, train.numInstances());      
         
-        return result;
-        
-        
+        return result; 
     }
     
 
-    
-    private Result getBestParameters(ArrayList<Result> results)
+    /**
+     * Evaluate the results to find out which c-gamma-value combination is the best
+     * @param results
+     * @return
+     */
+    private Result evaluateResults(ArrayList<Result> results)
     {
         double accBest = 0;
         Result resultBest = null; 

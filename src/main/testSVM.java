@@ -27,57 +27,65 @@ public class testSVM {
            //read the files and convert to arff 
            String arffTrain = readDataAndConvertToArff(traningsFile);
            String arffTest = readDataAndConvertToArff(testFile); 
+
+           System.out.println("Test RBF Kernel:");
+           callSvmToGetBestValues(arffTrain, arffTest, SVM.KERNEL_RBF_STRING);
            
-           double startTime = System.currentTimeMillis();
-           callSvmToGetBestValues(arffTrain, arffTest);
-           //callSVM(arffTrain, arffTest); 
-           double endTime = System.currentTimeMillis();
-           
-           System.out.println((endTime-startTime)/1000.0/60);
+           System.out.println("");
+           System.out.println("Test Linear Kernel:");
+           callSvmToGetBestValues(arffTrain, arffTest, SVM.KERNEL_LINEAR_STRING);
+          
+
         }
         
 
         /**
-         * iterates through n-folded cross validation set values for c and gamma as well as types of kernels to get best values
-         * @param trainFile
-         * @param testFile
+         * iterates through n-folded cross validation set values for c and gamma  to get best values
+         * @param trainFile - Path to the file with the training examples
+         * @param testFile - Path to the file with the testing examples
+         * @param kernel - Kernel to use 
          */
-        private static  void callSvmToGetBestValues(String trainFile, String testFile)
+        private static  void callSvmToGetBestValues(String trainFile, String testFile, String kernel )
         {        	      	
         	DataReader reader = new DataReader(trainFile, testFile);
         	Instances instances  = reader.getKTrainData(1000);
-        	FindBestParameters cv = new FindBestParameters(new Instances(instances), SVM.KERNEL_RBF_STRING);
+        	FindBestParameters cv = new FindBestParameters(new Instances(instances), kernel);
         	Result result = cv.doCV(10);
         	
         	System.out.println("Test whole set with best parameters...this may take a while");
-        	 PrintStream originalStream = System.out;
-
-             PrintStream dummyStream    = new PrintStream(new OutputStream(){
+        	 
+        	//suppress output of the classifier 
+        	PrintStream originalStream = System.out;
+            PrintStream dummyStream    = new PrintStream(new OutputStream(){
                  public void write(int b) {
-                     //NO-OP
                  }
              });
              System.setOut(dummyStream);
+             
+             
         	//test the best parameters on the whole set 
         	Instances train = reader.getTrainingData();
         	Instances test = reader.getTestData(); 
             SVM svm = new SVM(train, test);  
             double c  = result.getC();
             double gamma = result.getGamma();
-            
-           
-            svm.setParameters(svm.SVM_C_SVC, svm.KERNEL_RBF_STRING, c, gamma);
+            svm.setParameters(svm.SVM_C_SVC, kernel, c, gamma);
             svm.buildClassifier();
             System.setOut(originalStream);
             Evaluation eval = svm.evaluateModel();
             
-            IO_Functions.printFinalResult(eval, "data/", "RBF", result.getPowC(), result.getPowGamma());
+            //write final results in a file 
+            IO_Functions.printFinalResult(eval, "svm/", kernel, result.getPowC(), result.getPowGamma());
         	
         
         }
 
 		
-        
+        /**
+         * Read the data and convert it to an arff file 
+         * @param fileName
+         * @return
+         */
         private static String readDataAndConvertToArff(String fileName)
         {
             int imageLength = 28;

@@ -41,13 +41,22 @@ public class SVM {
     private String kernel; 
     
     
-    
+    /**
+     * Constructor
+     * @param trainInstances - training instances
+     * @param testInstances  testing instances
+     */
     public SVM(Instances trainInstances, Instances testInstances) {
     	train = trainInstances;
     	test = testInstances;
         svm = new LibSVM(); 
     }
     
+    /**
+     * Select the kernel tag 
+     * @param kernel
+     * @return
+     */
     private SelectedTag selectKernel(String kernel)
     {
        
