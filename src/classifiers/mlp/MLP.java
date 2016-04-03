@@ -306,6 +306,43 @@ public final class MLP {
 		return results;
 	}
 	
+	
+	/**
+	 * Experiment with the best parameters in the test set
+	 */
+	public static void experimentTestSet(double learningRate,
+			String hiddenLayer, int epochs, Instances train, Instances test, int seed) throws Exception {
+		// Create the weka mlp
+		MultilayerPerceptronCustom mlp = new MultilayerPerceptronCustom();
+		
+		// Set parameters
+		mlp.setSeed(seed);
+		// When validating (with Evaluation) it stops the validation if this nr
+		// of consecutive errors is reached
+		mlp.setValidationThreshold(100);
+		mlp.setReset(false); // Don't allow reset
+		mlp.setMomentum(0.0);
+		mlp.setLearningRate(learningRate);
+		mlp.setHiddenLayers(hiddenLayer);
+		mlp.setTrainingTime(epochs);
+		
+		// Train the mlp
+		mlp.buildClassifier(train);
+		
+		// Validate
+	
+		Evaluation eval = new Evaluation(train);
+		
+		eval.evaluateModel(mlp, train);
+		double trainError = eval.errorRate();
+		
+		eval.evaluateModel(mlp, test);
+		double testError = eval.errorRate();
+		
+		System.out.println("Train error: " + trainError);
+		System.out.println("Test error: " + testError);
+	}
+	
 	// Helper methods
 
 	private static void saveResultDouble(String experiment, List<String> lines,
