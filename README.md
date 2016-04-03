@@ -65,8 +65,8 @@ It stores the following:
 MultilayerPerceptonCustom.java
 Multi-layer perceptron neural networks implementation in java.
 
-
-![alt text](mlp/experiments/plot.png "The error-rate on the training and the validation set with respect to the
-training epochs")
+The error-rate on the training and the validation set with respect to the
+training epochs:
+![alt text](mlp/experiments/plot.png)
 
 
