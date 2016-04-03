@@ -1,0 +1,14 @@
+Kernel: RBFC-Value: 2^2.5Gamma-Value: 2^-9.75
+
+
+Results
+======
+
+Correctly Classified Instances       13790               91.9272 %
+Incorrectly Classified Instances      1211                8.0728 %
+Kappa statistic                          0.9103
+Mean absolute error                      0.0161
+Root mean squared error                  0.1271
+Relative absolute error                  8.9725 %
+Root relative squared error             42.3613 %
+Total Number of Instances            15001     

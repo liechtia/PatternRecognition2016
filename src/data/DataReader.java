@@ -3,8 +3,10 @@ package data;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import weka.core.Debug.Random;
+import weka.core.Instance;
 import weka.core.Instances;
 
 /**
@@ -40,28 +42,12 @@ public class DataReader {
     	return test;
     }
     
-    /**
-     * function to return cross validation sets
-     * @param seedValue
-     * @param foldNumber
-     * @return
-     */
-    public CrossValidationSet[] getCrossValidationData(int seedValue, int foldNumber){
-    	int folds = foldNumber;
-    	int seed = seedValue;
-    	Random rand = new Random(seed);
-    	Instances randData = new Instances(train);
-    	randData.randomize(rand);
-    	CrossValidationSet[] sets = new CrossValidationSet[folds];
-    	
-    	for (int n = 0; n < folds; n++) {
-    	    Instances trainSet = randData.trainCV(folds, n);
-    	    Instances testSet = randData.testCV(folds, n);
-    	    sets[n] = new CrossValidationSet(trainSet, testSet);
-    	}
-    	
-    	return sets;
-    }
+   public Instances getKTrainData(int k)
+   {
+       
+          
+       return new Instances(train, 0, k);
+   }
 	
     /**
      * Function to read the arff file 

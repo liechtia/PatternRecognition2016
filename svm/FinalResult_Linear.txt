@@ -1,0 +1,14 @@
+Kernel: LinearC-Value: 2^-6.0Gamma-Value: 2^-8.25
+
+
+Results
+======
+
+Correctly Classified Instances       12525               83.4944 %
+Incorrectly Classified Instances      2476               16.5056 %
+Kappa statistic                          0.8165
+Mean absolute error                      0.033 
+Root mean squared error                  0.1817
+Relative absolute error                 18.3451 %
+Root relative squared error             60.5721 %
+Total Number of Instances            15001     

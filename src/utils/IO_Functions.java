@@ -3,11 +3,17 @@ package utils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+
+import weka.classifiers.Evaluation;
+import data.Result;
 
 /**
  * Class to read and write to files
@@ -95,6 +101,8 @@ public class IO_Functions {
                 classes.add(datapoints.get(i).getLabel());
         }
         
+        Collections.sort(classes);
+        
         try {
             fout = new File(outputFileName + ".arff");
             fos = new FileOutputStream(fout);
@@ -110,12 +118,19 @@ public class IO_Functions {
                 bw.newLine();
             }
             
-            bw.write("@attribute class{");
-            for(int i = 0; i < classes.size(); i++)
+          //  bw.write("@attribute class{");
+            String classesString = "@attribute class{";
+            for(int i = 0; i < classes.size()-1; i++)
             {
-                bw.write(classes.get(i) + ",");
+                classesString += classes.get(i) + ",";
+               // bw.write(classes.get(i) + ",");
             }
-            bw.write("}");
+            //int t= classes.get(classes.size()-1);
+            //bw.write(classes.get(classes.size()-1));
+            //bw.write("}");
+            classesString += classes.get(classes.size()-1) +"}"; 
+            bw.write(classesString);
+            
             
             bw.newLine();
             bw.write("@data");
@@ -140,5 +155,92 @@ public class IO_Functions {
         } 
         
         return outputFileName + ".arff";
+    }
+    
+    /**
+     * Function to write the final results to a file
+     * @param eval - Evaluation of the classifier
+     * @param filePath - the path to write the file to
+     * @param kernel - the kernel which was used
+     * @param c - the c-Value which was used
+     * @param gamma - the gamma value which was used
+     */
+    public static void printFinalResult(Evaluation eval, String filePath, String kernel, double c, double gamma)
+    {
+
+        File fout;
+        FileOutputStream fos;
+        BufferedWriter bw;
+        try {
+            fout = new File(filePath + "FinalResult_" + kernel + ".txt");
+            fos = new FileOutputStream(fout);
+            bw = new BufferedWriter(new OutputStreamWriter(fos));
+            
+            bw.write("Kernel: " + kernel);
+            bw.write("C-Value: 2^" + c);
+            bw.write("Gamma-Value: 2^" + gamma);
+            bw.newLine();
+            bw.newLine();
+            bw.write(eval.toSummaryString("\nResults\n======\n", false));
+            bw.close();
+        }
+        catch (IOException e) {
+            System.out.println("An error occured while writing the final result file");
+            System.exit(-1); 
+        } 
+        
+    }
+        
+   /**
+    * Print the result of the cross-validation for one kernel to a file
+    * @param results - The Results
+    * @param filePath - the path to write the file to
+    * @param kernel - The kernel which was used
+    * @param cvFolds - how many cross-validation folds where used
+    * @param numberOfInstances - how many instances for the cv where used 
+    */
+    public static void printToFile(ArrayList<Result> results, String filePath, String kernel, int cvFolds, int numberOfInstances){
+        File fout;
+        FileOutputStream fos;
+        BufferedWriter bw;
+        try {
+            fout = new File(filePath + "/Result_" +kernel + "_" + cvFolds + "_" + numberOfInstances + ".txt");
+            fos = new FileOutputStream(fout);
+            bw = new BufferedWriter(new OutputStreamWriter(fos));
+            bw.write("====================================================================================");
+            bw.newLine();
+            bw.write("Kernel: " + kernel);
+            bw.newLine();
+            bw.write("Cross Validation Folds: " + cvFolds);
+            bw.newLine();
+            bw.write("Number of instances: " + numberOfInstances); 
+            bw.newLine();
+            bw.write("====================================================================================");
+            bw.newLine();
+            bw.newLine();
+            
+
+            for (Result result : results){
+  
+                   bw.write(String.format("C: %f (2^%f)", result.getC(), result.getPowC()));
+                   bw.newLine();
+                   bw.write(String.format("Gamma: %f (2%f)", result.getGamma(), result.getPowGamma()));
+                   bw.newLine();
+                   bw.write(String.format("Accuracy: %f %%", result.getAcc()*100));
+                   bw.newLine();
+                   bw.newLine();
+
+                }
+                
+            
+            bw.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occured while writing the result file");
+            System.out.println("Errormessage: " + e.getMessage());
+            
+        } catch (IOException e) {
+            System.out.println("An error occured while writing the result file");
+            System.out.println("Errormessage: " + e.getMessage());
+        }
     }
 }

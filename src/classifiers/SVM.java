@@ -1,5 +1,9 @@
 package classifiers;
 
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.Arrays;
+
 import weka.classifiers.Evaluation;
 import weka.classifiers.functions.LibSVM;
 import weka.core.Instances;
@@ -18,20 +22,62 @@ public class SVM {
     public final SelectedTag SVM_NU_SVC = new SelectedTag(LibSVM.SVMTYPE_NU_SVC, LibSVM.TAGS_SVMTYPE);
     public final SelectedTag SVM_NU_SVR = new SelectedTag(LibSVM.SVMTYPE_NU_SVR, LibSVM.TAGS_SVMTYPE);
     
-    public final SelectedTag  KERNEL_RBF = new SelectedTag(LibSVM.KERNELTYPE_RBF, LibSVM.TAGS_KERNELTYPE);
-    public final SelectedTag  KERNEL_POLYNOMIAL = new SelectedTag(LibSVM.KERNELTYPE_POLYNOMIAL, LibSVM.TAGS_KERNELTYPE);
-    public final SelectedTag  KERNEL_LINEAR = new SelectedTag(LibSVM.KERNELTYPE_LINEAR, LibSVM.TAGS_KERNELTYPE);
-    public final SelectedTag  KERNEL_SIGMOID = new SelectedTag(LibSVM.KERNELTYPE_SIGMOID, LibSVM.TAGS_KERNELTYPE);   
+    
+    public static final String KERNEL_RBF_STRING = "RBF";
+    public static final String KERNEL_POLYNOMIAL_STRING = "Polynomial";
+    public static final String KERNEL_LINEAR_STRING = "Linear";
+    public static final String KERNEL_SIGMOID_STRING = "Sigmoid";
+    
+    private final SelectedTag  KERNEL_RBF = new SelectedTag(LibSVM.KERNELTYPE_RBF, LibSVM.TAGS_KERNELTYPE);
+    private final SelectedTag  KERNEL_POLYNOMIAL = new SelectedTag(LibSVM.KERNELTYPE_POLYNOMIAL, LibSVM.TAGS_KERNELTYPE);
+    private final SelectedTag  KERNEL_LINEAR = new SelectedTag(LibSVM.KERNELTYPE_LINEAR, LibSVM.TAGS_KERNELTYPE);
+    private final SelectedTag  KERNEL_SIGMOID = new SelectedTag(LibSVM.KERNELTYPE_SIGMOID, LibSVM.TAGS_KERNELTYPE);   
+    
+    
     
     private Instances train;
     private Instances test;
     private LibSVM svm;
+    private String kernel; 
     
+    
+    /**
+     * Constructor
+     * @param trainInstances - training instances
+     * @param testInstances  testing instances
+     */
     public SVM(Instances trainInstances, Instances testInstances) {
     	train = trainInstances;
     	test = testInstances;
         svm = new LibSVM(); 
     }
+    
+    /**
+     * Select the kernel tag 
+     * @param kernel
+     * @return
+     */
+    private SelectedTag selectKernel(String kernel)
+    {
+       
+        if(kernel.equals(KERNEL_LINEAR_STRING))
+            return KERNEL_LINEAR;
+        
+        if(kernel.equals(KERNEL_POLYNOMIAL_STRING))
+            return KERNEL_POLYNOMIAL;
+        
+        if(kernel.equals(KERNEL_RBF_STRING))
+            return KERNEL_RBF;
+        
+        
+        if(kernel.equals(KERNEL_SIGMOID_STRING))
+            return KERNEL_SIGMOID;
+        
+        
+        return KERNEL_RBF; 
+    }
+    
+    
     
     /**
      * Function to set paramters for the svm 
@@ -42,20 +88,19 @@ public class SVM {
      * @param c
      * @param gamma
      */
-    public void  setParameters(SelectedTag svmType, SelectedTag kernelType,  double c, double gamma)
+    public void  setParameters(SelectedTag svmType, String kernel,  double c, double gamma)
     {
         svm.setSVMType(svmType);
-        svm.setKernelType(kernelType);
+        svm.setKernelType(selectKernel(kernel));
         svm.setDegree(3); //D
         svm.setGamma(gamma); //G
         svm.setCoef0(0); //R
         svm.setNu(0.5); //N
         svm.setCacheSize(40.0);
         svm.setSeed(1);                
-        svm.setEps(0.00001);
-        
+        svm.setEps(0.001);
         svm.setCost(c);
-        
+ 
     }
     
     /**
@@ -71,10 +116,10 @@ public class SVM {
      * @param seed
      * @param epsilon
      */
-    public void  setParameters(SelectedTag svmType, SelectedTag kernelType, double gamma, double c, int degree,  int coef, double nu, double cacheSize, int seed, double epsilon)
+    public void  setParameters(SelectedTag svmType, String kernel, double gamma, double c, int degree,  int coef, double nu, double cacheSize, int seed, double epsilon)
     {
         svm.setSVMType(svmType);
-        svm.setKernelType(kernelType);
+        svm.setKernelType(selectKernel(kernel));
         svm.setDegree(degree); //D
         svm.setGamma(gamma); //G
         svm.setCoef0(coef); //R
@@ -83,6 +128,8 @@ public class SVM {
         svm.setSeed(seed);                
         svm.setEps(epsilon);
         svm.setCost(c);
+        
+      
         
     }
     
@@ -105,21 +152,23 @@ public class SVM {
     /**
      * Function to evaluate the model 
      */
-    public double evaluateModel()
+    public Evaluation evaluateModel()
     {
         try {
+
             Evaluation eval = new Evaluation(train);
-            eval.evaluateModel(svm, test);            
+            eval.evaluateModel(svm, test);
             System.out.println(eval.toSummaryString("\nResults\n======\n", false));
-            double total = eval.correct() + eval.incorrect();
-            return eval.correct() / total;
+           
+           return eval;
         } catch (Exception e) {
+            
             System.out.println("An error occured while evaluating the model");
             System.out.println("Errormessage: " + e.getMessage());
             System.exit(-1);
         }
        
-        return 0.0;
+        return null;
     }
 
 }
