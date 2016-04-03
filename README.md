@@ -52,8 +52,8 @@ The best parameters are:
 * Epochs: 110
 * hidden layers: 80
 * Random initialization: 4
-* Experiments on the test set
 
+Experiments on the test set:
 **Accuracy: 98.3%**
 
 MLPResult.java
