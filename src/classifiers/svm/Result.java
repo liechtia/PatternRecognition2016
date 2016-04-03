@@ -1,4 +1,4 @@
-package data;
+package classifiers.svm;
 
 /**
  * Class to save a result for an evaluation for an SVM 

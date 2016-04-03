@@ -1,11 +1,9 @@
-package main;
+package classifiers.svm;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
 
 import weka.classifiers.Evaluation;
-import classifiers.SVM;
-import data.CrossValidationSet;
 
 /**
  * Class to run one cross-validation for one gamma-c-value pair

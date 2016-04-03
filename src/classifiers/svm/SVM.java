@@ -1,4 +1,4 @@
-package classifiers;
+package classifiers.svm;
 
 import java.io.OutputStream;
 import java.io.PrintStream;

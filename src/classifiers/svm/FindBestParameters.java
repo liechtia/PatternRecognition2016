@@ -1,4 +1,4 @@
-package main;
+package classifiers.svm;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,12 +7,9 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import classifiers.SVM;
 import utils.IO_Functions;
 import weka.core.Instances;
 import weka.core.Debug.Random;
-import data.CrossValidationSet;
-import data.Result;
 
 import java.io.PrintStream;
 import java.io.OutputStream;

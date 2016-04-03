@@ -1,4 +1,4 @@
-package data;
+package classifiers.svm;
 
 import weka.core.Instances;
 

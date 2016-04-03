@@ -1,4 +1,4 @@
-package data;
+package classifiers.svm;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

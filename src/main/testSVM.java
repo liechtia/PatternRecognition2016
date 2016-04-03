@@ -4,8 +4,10 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
-import classifiers.SVM;
-import data.*;
+import classifiers.svm.DataReader;
+import classifiers.svm.FindBestParameters;
+import classifiers.svm.Result;
+import classifiers.svm.SVM;
 import utils.Datapoint;
 import utils.IO_Functions;
 import utils.FeatureExtraction;

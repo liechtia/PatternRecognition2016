@@ -12,8 +12,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import classifiers.svm.Result;
 import weka.classifiers.Evaluation;
-import data.Result;
 
 /**
  * Class to read and write to files
