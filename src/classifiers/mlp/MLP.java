@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.TreeMap;
 
@@ -31,6 +32,7 @@ public final class MLP {
 	 * @param test The test data set.
 	 * @return The error rate of the evaluation against the test set.
 	 */
+ 
 	public static MLPResult run(double learningRate, String hiddenLayer, int epochs,
 							 Instances train, Instances test) throws Exception {
 		// Create the weka mlp
@@ -82,6 +84,99 @@ public final class MLP {
 		}
 		
 		// save result
+		
+		return results;
+	}
+	 public static List<MLPResult> run(double learningRate, String hiddenLayer, int epochs,
+			  Instances data, int folds, boolean randomize, int seed)
+					  throws Exception {
+		List<MLPResult> results = new ArrayList<MLPResult>();
+		
+		if (randomize) {
+		Random rand = new Random(0);
+		data.randomize(rand);
+		data.stratify(folds);
+		}
+		
+		for (int f = 0; f < folds; f++) {
+		Instances train = data.trainCV(4, f);
+		Instances test = data.testCV(4, f);			
+		MLPResult r = MLP.run(learningRate, hiddenLayer, epochs, train, test);
+		results.add(r);
+		}
+		
+		// save result
+		
+		return results;
+		}
+			
+	/**
+	 * Experiment with random initialization of weights.
+	 */
+	 public static Map<Integer, List<MLPResult>> experimentRandomWeights(double learningRate,
+			int hiddenLayer, int epochs, Instances data, int folds, int[] seed) throws Exception {
+		Map<Integer,List<MLPResult>> results = new TreeMap<Integer,List<MLPResult>>();
+		int start = seed[0]; //0.1 
+		int stop = seed[1];  //1.0
+		int increment = seed[2]; //0.1
+		
+		Random rand = new Random(0);
+		data.randomize(rand);
+		data.stratify(folds);
+		
+		for (int curseed = start; curseed <= stop; curseed += increment) {
+			List<MLPResult> nResult = MLP.run(learningRate, String.valueOf(hiddenLayer), epochs, data,
+											  folds, false, curseed);
+			results.put(curseed, nResult);
+		}
+		
+		// Save result
+		List<String> lines = new ArrayList<String>();
+		lines.add("# Experiment with cross-validation");
+		lines.add("");
+		lines.add("# Variable: learning rate");
+		lines.add("# Epochs: " + epochs);
+		lines.add("# Data set size: " + data.numInstances());
+		lines.add("# Folds: " + folds);
+		lines.add("");
+		lines.add("nodes,error");
+		saveResult("RandomWeights-best", lines, results);
+		
+		return results;
+	}
+	
+
+	/**
+	 * Experiment with different learning rates.
+	 */
+	public static Map<Double, List<MLPResult>> experimentLearningRate(Double[] learningRate,
+			int hiddenLayer, int epochs, Instances data, int folds) throws Exception {
+		Map<Double,List<MLPResult>> results = new TreeMap<Double,List<MLPResult>>();
+		double start = learningRate[0]; //0.1 
+		double stop = learningRate[1];  //1.0
+		double increment = learningRate[2]; //0.1
+		
+		Random rand = new Random(0);
+		data.randomize(rand);
+		data.stratify(folds);
+		
+		for (double lrate = start; lrate <= stop; lrate += increment) {
+			List<MLPResult> nResult = MLP.run(lrate, String.valueOf(hiddenLayer), epochs, data,
+											  folds, false);
+			results.put(lrate, nResult);
+		}
+		
+		// Save result
+		List<String> lines = new ArrayList<String>();
+		lines.add("# Experiment with cross-validation");
+		lines.add("");
+		lines.add("# Variable: learning rate");
+		lines.add("# Epochs: " + epochs);
+		lines.add("# Data set size: " + data.numInstances());
+		lines.add("# Folds: " + folds);
+		lines.add("");
+		lines.add("nodes,error");
+		saveResultDouble("learningRate-best", lines, results);
 		
 		return results;
 	}
@@ -180,7 +275,24 @@ public final class MLP {
 	}
 	
 	// Helper methods
-	
+
+	private static void saveResultDouble(String experiment, List<String> lines,
+			   Map<Double,List<MLPResult>> results) throws Exception {
+		String fileName = experiment;
+		Date date = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy-HHmmss");
+		fileName += "-" + sdf.format(date);
+		
+		for (Entry<Double, List<MLPResult>> entry: results.entrySet()) {
+		List<MLPResult> nResult = entry.getValue();
+		for (MLPResult r: nResult) {
+		lines.add(entry.getKey() + "," + r.getErrorRate());	
+		}
+		}
+		Path file = Paths.get("mlp/experiments/" + fileName + ".csv");
+		Files.write(file, lines, Charset.forName("UTF-8"));
+		}
+			
 	private static void saveResult(String experiment, List<String> lines,
 								   Map<Integer,List<MLPResult>> results) throws Exception {
 		String fileName = experiment;
