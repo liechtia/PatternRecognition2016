@@ -48,19 +48,20 @@ Test is the test data set.
 The error rate of the evaluation against the test set.
 
 The best parameters are:
-Learning rate: 0.1
-Epochs: 110
-hidden layers: 80
-Random initialization: 4
-Experiments on the test set
-Accuracy: 98.3%
+* Learning rate: 0.1
+* Epochs: 110
+* hidden layers: 80
+* Random initialization: 4
+* Experiments on the test set
+
+**Accuracy: 98.3%**
 
 MLPResult.java
 Class to store the result of an MLP training and evaluation.
 It stores the following:
-	- errorRate: the error rate of the evaluation
-	- summary: a summary string of the evaluation
-	- model: the MLP model created by the training
+	* errorRate: the error rate of the evaluation
+	* summary: a summary string of the evaluation
+	* model: the MLP model created by the training
 	
 MultilayerPerceptonCustom.java
 Multi-layer perceptron neural networks implementation in java.
