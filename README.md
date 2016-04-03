@@ -59,9 +59,9 @@ The best parameters are:
 MLPResult.java
 Class to store the result of an MLP training and evaluation.
 It stores the following:
-	* errorRate: the error rate of the evaluation
-	* summary: a summary string of the evaluation
-	* model: the MLP model created by the training
+* errorRate: the error rate of the evaluation
+* summary: a summary string of the evaluation
+* model: the MLP model created by the training
 	
 MultilayerPerceptonCustom.java
 Multi-layer perceptron neural networks implementation in java.
