@@ -62,6 +62,37 @@ public final class MLP {
 		return new MLPResult(eval.errorRate(), eval.toSummaryString(), mlp);
 	}
 	
+	public static MLPResult runSeed(double learningRate, String hiddenLayer, int epochs,
+			 Instances train, Instances test, int seed) throws Exception {
+		// Create the weka mlp
+		MultilayerPerceptron mlp = new MultilayerPerceptron();
+		
+		// Set parameters
+
+		mlp.setSeed(seed);
+	
+		// When validating (with Evaluation) it stops the validation if this nr
+		// of consecutive errors is reached
+		mlp.setValidationThreshold(100);
+		mlp.setReset(false); // Don't allow reset
+		mlp.setMomentum(0.0);
+		mlp.setLearningRate(learningRate);
+		mlp.setHiddenLayers(hiddenLayer);
+		mlp.setTrainingTime(epochs);
+		// Train the mlp
+		mlp.buildClassifier(train);
+		
+		// Evaluate
+		Evaluation eval = new Evaluation(train);
+		eval.evaluateModel(mlp, test);
+		
+		// Print result
+		System.out.println(eval.toSummaryString());
+		
+		return new MLPResult(eval.errorRate(), eval.toSummaryString(), mlp);
+		}
+			
+	
 	/**
 	 * Run and cross-validate.
 	 */
@@ -87,6 +118,7 @@ public final class MLP {
 		
 		return results;
 	}
+	
 	 public static List<MLPResult> run(double learningRate, String hiddenLayer, int epochs,
 			  Instances data, int folds, boolean randomize, int seed)
 					  throws Exception {
@@ -101,7 +133,7 @@ public final class MLP {
 		for (int f = 0; f < folds; f++) {
 		Instances train = data.trainCV(4, f);
 		Instances test = data.testCV(4, f);			
-		MLPResult r = MLP.run(learningRate, hiddenLayer, epochs, train, test);
+		MLPResult r = MLP.runSeed(learningRate, hiddenLayer, epochs, train, test, seed);
 		results.add(r);
 		}
 		
@@ -140,7 +172,7 @@ public final class MLP {
 		lines.add("# Folds: " + folds);
 		lines.add("");
 		lines.add("nodes,error");
-		saveResult("RandomWeights-best", lines, results);
+		saveResult("RandomWeights-test", lines, results);
 		
 		return results;
 	}

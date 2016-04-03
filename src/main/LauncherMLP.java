@@ -21,8 +21,8 @@ public final class LauncherMLP {
 		test.setClassIndex(0);
 
 		//List<double[]> results = MLP.experimentEpochs(0.1, "10", 10, train, test);
-		 MLP.experimentLearningRate(new Double[]{0.1, 1.0, 0.1}, 80, 110, train, 4);
-		
+		//MLP.experimentLearningRate(new Double[]{0.1, 1.0, 0.1}, 80, 110, train, 4);
+		MLP.experimentRandomWeights(0.2, 80, 10, train, 4, new int[]{1, 10, 1});
 		//for (double[] r: results) {
 		//	System.out.println((int) r[0] + "," + r[1] + "," + r[2]);	
 		//}
