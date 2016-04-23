@@ -5,7 +5,7 @@ package main;
 
 import ks.datahandling.WordImages;
 
-public class mainKeywordSpottingData {
+public class MainWordImageExtraction {
 
     private static final String folderLocations = "KeywordSpottingData/ground-truth/locations";
     private static final String folderSave = "KeywordSpottingData/wordimages";
