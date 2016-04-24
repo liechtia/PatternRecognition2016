@@ -17,6 +17,11 @@ public class Binarization {
 
         try{
             for (File file : sourceImages){
+                if(!file.getName().contains("png"))
+                {
+                    continue;
+                }
+                
                 BufferedImage image = ImageIO.read(file);
                 BufferedImage binImage = binarize(image, threshold);
 

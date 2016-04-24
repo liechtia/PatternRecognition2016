@@ -1,5 +1,6 @@
 package org.apache.commons.imaging.examples;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -33,6 +34,11 @@ public class MainSkewCorrection {
 	            	String imgFile;
 	        		imgFile = folder+"/"+fileEntry.getName();
 	        		
+	        		if(!imgFile.contains(".png"))
+	        		{
+	        		    continue;
+	        		}
+	        		
 	                BufferedImage img = Imaging.getBufferedImage(new File(imgFile));
 	                if(img == null) {
 	                    System.exit(-1);
@@ -45,6 +51,9 @@ public class MainSkewCorrection {
 	                
 	                BufferedImage returnImage = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_RGB);
 	                Graphics2D g2d = returnImage.createGraphics();
+	      
+	                g2d.setPaint (Color.white);
+	                g2d.fillRect ( 0, 0, returnImage.getWidth(), returnImage.getHeight() );
 	                g2d.rotate(Math.toRadians(res), returnImage.getWidth() / 2, returnImage.getHeight() / 2);
 	                g2d.drawImage(img, 0, 0, null);
 	                g2d.dispose();

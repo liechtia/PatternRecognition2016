@@ -3,6 +3,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
@@ -82,7 +83,7 @@ public class WordImages {
              /*Get alls svg files which are in the locations folder and extract the words from the 
                *corresponding document image*/
              for (File file : listOfFiles) {
-                 if (file.isFile()) {
+                 if (file.getName().contains(".svg")) {
                      Document doc = readSVG(file.toString());
                      extractWords(file.getName().replace("svg", "jpg"),  doc, br);   
                  }
@@ -154,6 +155,8 @@ public class WordImages {
                 String svgPath = svgPaths.item(i).getNodeValue();
                 SvgPath svgpath = getBox( svgPath);                 //translate the path to normalized x and y coordinates 
                 getImage(fileName, saveName, svgpath);
+                
+                
             } 
         } catch (XPathExpressionException e) {
             // TODO Auto-generated catch block
@@ -214,8 +217,21 @@ public class WordImages {
             g2.setClip(polyline);
             g2.draw(polyline);
             //take the clipped parte from the unclipped image and draw it on the g2 graphic
-            g2.drawImage(wordImageUnclipped, 0, 0, null); 
-            g2.dispose();         
+            g2.drawImage(wordImageUnclipped, 0, 0, null);     
+            g2.dispose();   
+            
+            for(int i = 0; i < wordImageClipped.getWidth(); i++)
+            {
+                for(int j = 0; j < wordImageClipped.getHeight(); j++)
+                {
+                    if(wordImageClipped.getRGB(i, j) ==0)
+                    {
+                        wordImageClipped.setRGB(i, j, new Color(255, 255, 255).getRGB());
+                    }
+                    
+                }
+                
+            }
             
             //save the extracted word
             outputfile = new File(this.folderSave + "/clipped/" + saveName + ".png");
@@ -245,17 +261,16 @@ public class WordImages {
 	         
 	      }
 
-	      int[] xValuesArr = new int[xValues.size()-1];
-	      int[] yValuesArr = new int[yValues.size()-1];
+	      int[] xValuesArr = new int[xValues.size()];
+	      int[] yValuesArr = new int[yValues.size()];
 	      
-	      for(int i = 1 ; i < xValues.size(); i++){
-	          xValuesArr[i-1] = xValues.get(i);
-	          yValuesArr[i-1] = yValues.get(i);
+	      for(int i = 0 ; i < xValues.size(); i++){
+	          xValuesArr[i] = xValues.get(i);
+	          yValuesArr[i] = yValues.get(i);
 	      }
 	      
 	      Collections.sort(xValues);
 	      Collections.sort(yValues);
-
 	      
 	      int height = yValues.get(yValues.size()-1) - yValues.get(0);
 	      int width =  xValues.get(xValues.size()-1) - xValues.get(0);
