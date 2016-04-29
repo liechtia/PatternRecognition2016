@@ -4,14 +4,19 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
 
+import ks.datahandling.DTW;
 import ks.datahandling.Image;
+import utils.DTWResult;
 
 public class MainKeywordSpotting {
 
@@ -27,7 +32,12 @@ public class MainKeywordSpotting {
         HashMap<String, ArrayList<Image>> trainingImages =  new HashMap<String, ArrayList<Image>>();
         HashMap<String, ArrayList<Image>> validImages =  new HashMap<String, ArrayList<Image>>();
         
-        File[] images = folderImages.listFiles();
+        File[] images = folderImages.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return !name.equals(".DS_Store");
+            }
+        });
         
         for(File imageFile : images)
         {
@@ -58,8 +68,17 @@ public class MainKeywordSpotting {
             }
 
         }
-       
-
+        
+        //=================================
+        // TEST
+        //=================================
+        DTW dtw = new DTW();
+        double distance = dtw.computeDTW(trainingImages.get("T-h-e-r-e").get(0),
+        		trainingImages.get("T-h-e").get(0), 10);
+        System.out.println("Distance: " + distance);
+        
+        // findSimilar() does not work
+        // List<DTWResult> result = dtw.findSimilar(trainingImages, trainingImages.get("D-o-c-t-o-r").get(0), 10);
     }
     
     private static void addImage(HashMap<String, ArrayList<Image>> list, String label, Image im)
