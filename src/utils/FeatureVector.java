@@ -10,6 +10,12 @@ public class FeatureVector {
     private int lowerGradient; 
     private int upperGradient;
     
+    public double[] getAllFeatures() {
+    	double[] allFeatures = new double[]{bwTransistions, lowerContour, upperContour,
+    			fractionUcLc, fractionOfBlackPixels, lowerGradient, upperGradient};
+    	return allFeatures;
+    }
+    
     public int getLowerGradient()
     {
         return lowerGradient;
