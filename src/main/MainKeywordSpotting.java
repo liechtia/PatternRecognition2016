@@ -1,46 +1,46 @@
 package main;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FilenameFilter;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
 
-import ks.datahandling.DTW;
-import ks.datahandling.Image;
-import utils.DTWResult;
+import javax.imageio.ImageIO;
+
+import keywordspotting.KeywordImage;
+import keywordspotting.KeywordsSpotting;
 
 public class MainKeywordSpotting {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // TODO Auto-generated constructor stub
-        File folderImages = new File("KeywordSpottingData/wordimages/clipped_skew/");
+        File folderImages = new File("KeywordSpottingData/wordimages/final_clipped/");
         String pathTrain = "KeywordSpottingData/task/train.txt";
         String pathValid = "KeywordSpottingData/task/valid.txt";
         
         ArrayList<String> trainFiles = readFile(new File(pathTrain));
         ArrayList<String> validFiles = readFile(new File(pathValid));
         
-        HashMap<String, ArrayList<Image>> trainingImages =  new HashMap<String, ArrayList<Image>>();
-        HashMap<String, ArrayList<Image>> validImages =  new HashMap<String, ArrayList<Image>>();
+        ArrayList<KeywordImage> trainingImages =  new  ArrayList<KeywordImage>();
+        ArrayList<KeywordImage> validImages =  new ArrayList<KeywordImage>();
         
-        File[] images = folderImages.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return !name.equals(".DS_Store");
-            }
-        });
+        HashMap<String, ArrayList<KeywordImage>> trainingHashMap = new  HashMap<String, ArrayList<KeywordImage>>();
+        HashMap<String, ArrayList<KeywordImage>> validHashMap = new  HashMap<String, ArrayList<KeywordImage>>();
         
+        File[] images = folderImages.listFiles();
+        
+        System.out.println("Read files");
         for(File imageFile : images)
-        {
+        {     
+            if(!imageFile.getName().contains(".png")) continue; 
+            
             String[] name = imageFile.getName().split(" ");
             String[] information = name[0].split("-");
             String doc = information[0];
@@ -49,39 +49,125 @@ public class MainKeywordSpotting {
             
             int  idx = name[1].lastIndexOf(".");
             
-            String label = name[1].substring(0, idx);
+            String label = name[1].substring(0, idx).toLowerCase();
             
-            System.out.println("Doc: " + doc + " Label: " + label); 
+            if(label.lastIndexOf("-s_") >0 )
+            {
+                label = label.substring(0, label.lastIndexOf("-s_"));
+            }
+            
+            if(label.equals(""))
+                continue; 
             
             //Calculate features for the images
-            Image im = new Image(label, imageFile, line, wordInLine);
-            im.slidingWindow();
-            
+            KeywordImage im = new KeywordImage(label, imageFile, line, wordInLine);
             //according to their doc number add the image to the hash map 
             if(trainFiles.contains(doc))
-            {
-               addImage(trainingImages, label, im);
+            {              
+                trainingImages.add(im);  
+                addImage(trainingHashMap, label, im); 
             }
             else if(validFiles.contains(doc))
             {
-                addImage(validImages, label, im);
+                validImages.add(im);
+                addImage(validHashMap, label, im); 
             }
 
         }
         
-        //=================================
-        // TEST
-        //=================================
-        DTW dtw = new DTW();
-        double distance = dtw.computeDTW(trainingImages.get("T-h-e-r-e").get(0),
-        		trainingImages.get("T-h-e").get(0), 10);
-        System.out.println("Distance: " + distance);
+        ArrayList<String> keywords = new ArrayList<String>();
+        BufferedReader br = new BufferedReader(new FileReader("KeywordSpottingData/task/keywords.txt"));
+        String line = null;
         
-        // findSimilar() does not work
-        // List<DTWResult> result = dtw.findSimilar(trainingImages, trainingImages.get("D-o-c-t-o-r").get(0), 10);
+        while((line = br.readLine()) != null)
+        {
+            keywords.add(line.toLowerCase()); 
+        }
+        
+        System.out.println("Get Features");
+        calculateFeatures(validImages);
+        calculateFeatures(trainingImages);
+
+        ArrayList<KeywordsSpotting> classifications = new ArrayList<KeywordsSpotting>();
+
+        int count = 0;
+        int correct = 0;
+        for(KeywordImage test : validImages)
+        {
+            //just classifiy keywords
+            if(!keywords.contains(test.getLabel()))
+            {
+                continue;
+            }
+            
+            //just classifiy keywords where we know that there are images in the validation set
+            if(!validHashMap.containsKey(test.getLabel()))
+                continue;
+            
+            System.out.println(test.getFile().getName());
+            KeywordsSpotting ks = new KeywordsSpotting(test);
+            ks.pruneImages(trainingImages);
+            ks.runDtw();
+            
+            if(ks.getClassified().equals(ks.getTemplate().getLabel()))
+            {
+                correct++;
+            }
+            count++;
+
+            classifications.add(ks); 
+       
+        }
+        
+        System.out.println(correct + " " + count);
+        
+        //write the results
+        BufferedWriter output = null;
+        File file = new File("example.txt");
+        output = new BufferedWriter(new FileWriter(file));
+         
+        for(KeywordsSpotting k : classifications)
+        {
+            output.write(k.getTemplate().getLabel() + " " + k.getTemplate().getFile().getName());
+            output.newLine();
+            output.write("Classified as: " + k.getClassified());
+            
+            for(int i = 0; i < k.labels.size(); i++)
+            {
+                output.newLine();
+                output.write(k.labels.get(i) + " "+ k.votes[i]);
+            }
+            output.newLine();
+        }
+        
+        output.close();
+        
+
     }
     
-    private static void addImage(HashMap<String, ArrayList<Image>> list, String label, Image im)
+    private static void calculateFeatures( ArrayList<KeywordImage> images)
+    {
+        for(KeywordImage im : images)
+        {
+            getFeatures(im);
+        }
+    }
+  
+
+    private static void getFeatures(KeywordImage im)
+    {
+        BufferedImage image;
+        try {
+            image = ImageIO.read(im.getFile());    
+            im.setImage(image);
+
+        } catch (IOException e) {
+         
+            e.printStackTrace();
+        }
+    
+    }
+    private static void addImage(HashMap<String, ArrayList<KeywordImage>> list, String label, KeywordImage im)
     {
         if(list.containsKey(label))
         {
@@ -118,5 +204,8 @@ public class MainKeywordSpotting {
         
         
     }
+    
+
+
 
 }

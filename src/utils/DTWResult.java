@@ -1,20 +1,20 @@
 package utils;
 
-import ks.datahandling.Image;
+import keywordspotting.KeywordImage;
 
 public class DTWResult {
-	private Image image;
+	private KeywordImage image;
 	private double distance;
 	
-	public DTWResult(Image image, double distance) {
+	public DTWResult(KeywordImage image, double distance) {
 		this.image = image;
 		this.distance = distance;
 	}
 	
-	public Image getImage() {
+	public KeywordImage getImage() {
 		return image;
 	}
-	public void setImage(Image image) {
+	public void setImage(KeywordImage image) {
 		this.image = image;
 	}
 	public double getDistance() {

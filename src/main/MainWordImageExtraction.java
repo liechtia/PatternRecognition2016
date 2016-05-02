@@ -3,7 +3,7 @@
 
 package main;
 
-import ks.datahandling.WordImages;
+import keywordspotting.WordImages;
 
 public class MainWordImageExtraction {
 

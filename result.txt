@@ -1,0 +1,184 @@
+
+Key: l-e-t-t-e-r-s
+l-e-t-t-e-r-s 1
+o-r-d-e-r-s 1
+s-u-r-g-e-o-n 1
+c-a-r-t-e-r 1
+e-n-s-i-g-n 1
+
+Key: o-r-d-e-r-s
+o-r-d-e-r-s 5
+
+Key: a-n-d
+a-n-d 2
+w-a-i-t 1
+w-i-t-h 1
+t-h-a-n 1
+
+Key: i-n-s-t-r-u-c-t-i-o-n-s
+i-n-s-t-r-u-c-t-i-o-n-s 5
+
+Key: d-e-c-e-m-b-e-r
+c-o-u-n-t-r-y 1
+b-a-r-r-a-c-k-s 1
+b-e-r-l-a-n-d 1
+r-a-n-g-e-r-s 1
+d-a-v-i-d 1
+
+Key: s_1-s_7-s_5-s_5
+b-e 2
+h-a-v-e 1
+c-a-r 1
+o-r 1
+
+Key: h-o-g-g
+i-m-a-g-i-n-e 1
+e-v-e-r-y 1
+c-a-p-t-a-i-n 1
+b-e-r-r-e-l-s 1
+e-n-s-i-g-n 1
+
+Key: c-o-m-p-a-n-y
+g-a-r-r-i-s-o-n 1
+c-o-m-m-a-n-d-s 1
+c-o-m-p-a-n-y 2
+c-o-m-p-a-n-i-e-s 1
+
+Key: i-f
+o-f 3
+a-s 2
+
+Key: a-n-y
+c-a-n 1
+a-n-d 2
+s_mi 1
+s-a-m-e 1
+
+Key: o-p-p-o-r-t-u-n-i-t-y
+c-o-m-m-a-n-d-s 1
+m-e-d-i-a-t-e-l-y 1
+t-h-o-u-s-a-n-d 1
+c-o-m-m-i 1
+s-e-r-g-e-a-n-t-s 1
+
+Key: y-o-u
+y-o-u 3
+l-e-a-v-e 1
+f-o-r-t 1
+
+Key: a-r-e
+a-r-e 3
+t-h-e 1
+o-u-t 1
+
+Key: t-o
+t-h-e 2
+h-e 1
+i-n 1
+f-o-r 1
+
+Key: b-e
+b-e 1
+h-e 1
+h-i-s 1
+f-o-r 1
+c-a-r 1
+
+Key: p-a-r-t-i-c-u-l-a-r-l-y
+u-n-d-e-r-t-a-k-i-n-g 1
+p-l-a-n-t-a-t-i-o-n 1
+c-u-m-b-e-r-l-a-n-d 1
+a-l-e-x-a-n-d-r-i-a 1
+p-a-r-t-i-c-u-l-a-r-l-y 1
+
+Key: a-c-t
+t-h-e 1
+o-u-t 1
+a-n-d 1
+o-n-l-y 1
+e-a-c-h 1
+
+Key: a-n-d
+a-n-d 3
+c-a-n 1
+e-a-c-h 1
+
+Key: c-a-r-e-f-u-l
+a-c-c-o-u-n-t 1
+r-e-c-e-i-v-e 1
+s-h-o-o-t-i-n-g 1
+o-r-d-e-r-e-d 1
+c-a-p-t-a-i-n 1
+
+Key: i-n
+o-r 1
+i-n 1
+b-y 1
+d-e 1
+b-e 1
+
+Key: t-h-e-s-e
+t-a-k-e 1
+w-h-e-r-e 1
+t-h-e-m 1
+t-h-a-n 1
+w-h-i-c-h 1
+
+Key: s-e-e
+y-o-u 1
+t-i-m-e 1
+s-o-o-n 2
+t-h-e-r-e 1
+
+Key: i-n-g
+i-n 1
+b-e-s-t 1
+t-h-e-d 1
+a-t 1
+b-e 1
+
+Key: t-h-a-t
+o-t-h-e-r-s 1
+s-a-i-d 1
+o-b-l-i-g-e 1
+w-h-e-r-e 1
+a-l-t-e-r-n-s 1
+
+Key: t-h-e-r-e
+t-a-k-e 1
+t-h-o-s-e 1
+t-h-a-t 1
+t-h-e-m 1
+o-r-d-e-r 1
+
+Key: i-s
+i-s 5
+
+Key: n-o
+o-n 1
+a-r-e 1
+i-n 1
+r-e 1
+n-o 1
+
+Key: b-e-t-w-e-e-n
+t-h-i-n-g-s 1
+h-a-v-i-n-g 1
+h-e-r-e-b-y 1
+r-e-t-u-r-n 1
+l-o-d-g-i-n-g 1
+
+Key: t-h-e
+t-h-e 5
+
+Key: r-e-t-u-r-n-s
+r-a-n-g-e-r-s 2
+a-n-d-r-i-a 1
+s-u-r-g-e-o-n 2
+
+Key: a-n-d
+a-n-d 1
+m-o-s-t 1
+s-u-c-h 1
+s-e-n-t 1
+t-a-k-e 1
