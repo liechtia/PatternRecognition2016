@@ -253,7 +253,7 @@ public class Preprocessing {
          { 
              int numberOfBlackPixels = 0;
              for(int j = 0; j < imageClipped.getWidth(); j++){
-                 if(imageClipped.getRGB(j, i) !=new Color(255, 255, 255).getRGB() )
+                 if(imageClipped.getRGB(j, i) != new Color(255, 255, 255).getRGB() )
                  {
                      numberOfBlackPixels++;
                  }
@@ -266,7 +266,7 @@ public class Preprocessing {
              }
              
          }
-         
+         System.out.println("ymax=" + yMax);
          //calculate average number of pixels in each row
          int average  = 0;
          int numberOfRows = 0;
@@ -311,8 +311,8 @@ public class Preprocessing {
          
          //find row with min number of black pixels before peak line
          int minNumberOfBlackPixels = Integer.MAX_VALUE;
-         int yMin = 0;
-         for(int i = 0; i < yMax; i++)
+         int yMin = -1;
+         for(int i = yMax; i >=0; i--)
          {
              int numberOfBlackPixels = 0;
              for(int j = 0; j < imageClipped.getWidth(); j++){
@@ -322,13 +322,15 @@ public class Preprocessing {
                  }
              }
              
-             if(numberOfBlackPixels > 0 && numberOfBlackPixels < minNumberOfBlackPixels)
+             if(numberOfBlackPixels >= 0 && numberOfBlackPixels < minNumberOfBlackPixels)
              {
                  yMin = i;
                  minNumberOfBlackPixels = numberOfBlackPixels;
+                 System.out.println("MIKROTERO:"+i);
+                 System.out.println(numberOfBlackPixels);
              }
          }
-         
+         System.out.println("ymin=" + yMin);
          //find row after yMin with more or equal average pixel 
          int upperBaseLineY = 0;
          for(int i = yMin; i < imageClipped.getHeight(); i++)
@@ -362,6 +364,7 @@ public class Preprocessing {
          System.out.println(imageClipped.getHeight());
          System.out.println(upperBaseLineY);
          System.out.println(lowerBaseLineY);
+         System.out.println("narkotika");
          
          BufferedImage area1 ;
          if(upperBaseLineY > 0)
@@ -429,7 +432,8 @@ public class Preprocessing {
     private BufferedImage cutColumns(BufferedImage img)
     {
             int widthBegin = -1;
-            int heightBegin = -1; 
+            int heightBegin = -1;
+            int lowerHeightBegin = -1;
             int widthEnd;
             widthEnd = -1;
            int white = new Color(255, 255, 255).getRGB();
@@ -493,10 +497,34 @@ public class Preprocessing {
                 }
             }
            
+          //find last row which has a black pixel
+            for(int i =  img.getHeight()-1; i >= 0;  i--)
+            {         
+                for(int j = 0; j < img.getWidth(); j++)
+                {
+                    int rgb = img.getRGB(j, i);
+                    if(rgb != white )
+                    {
+                    	lowerHeightBegin = i+1; 
+                        break;
+                    }
+                }
+                
+                if(lowerHeightBegin != -1)
+                {
+                    break; 
+                }
+            }
+            
             //cut the image
             int widthNew = widthEnd-widthBegin;
-            int heightNew = img.getHeight()-heightBegin;
+            int heightNew = img.getHeight() - heightBegin - (img.getHeight() - lowerHeightBegin);
             
+            System.out.println(heightNew);
+            System.out.println(heightBegin);
+            System.out.println(lowerHeightBegin);
+            //System.out.println(heightNew - lowerHeightBegin);
+            System.out.println("--");
             BufferedImage imageClipped= img.getSubimage(widthBegin, heightBegin, widthNew, heightNew);
                 
             return imageClipped;

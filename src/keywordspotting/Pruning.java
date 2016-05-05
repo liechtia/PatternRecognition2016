@@ -17,7 +17,7 @@ public class Pruning {
         int type = image.getType() == 0? BufferedImage.TYPE_INT_ARGB : image.getType();
         BufferedImage area1 ;
         BufferedImage area2 ;
-       area1 =resizeImage(image.getSubimage(0, 0, image.getWidth(), baseline), type, image.getWidth(), size);
+        area1 =resizeImage(image.getSubimage(0, 0, image.getWidth(), baseline), type, image.getWidth(), size);
         
         if(baseline+1 < image.getHeight())
         {
@@ -96,7 +96,7 @@ public class Pruning {
         
         int maxDiff = 0;
         int maxDiffIdx = -1;
-        for(int i =1 ; i < image.getHeight(); i++)
+        for(int i = 1 ; i < image.getHeight(); i++)
         {
             int diff=Math.abs(histogram[i-1]-histogram[i]);
             

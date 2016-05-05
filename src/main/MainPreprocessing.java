@@ -29,7 +29,7 @@ public class MainPreprocessing {
             angles[i] = alphaMin +(intervall*i); 
         }
         Preprocessing pr = new Preprocessing(folderClippedSave);
-        
+        int i=0;
         for(File imageFile : images)
         {
             if(!imageFile.getName().contains(".png"))
@@ -40,7 +40,7 @@ public class MainPreprocessing {
             BufferedImage image = ImageIO.read(imageFile);
             keywordimage.setImage(image);
             pr.addImage(keywordimage);
-           
+            i += 1;
         }
         
         System.out.println("Binarize");
@@ -59,12 +59,12 @@ public class MainPreprocessing {
    
       //  pr.getComponentsImages();
         
-        System.out.println("Scale vertical");
-      //  pr.scaleVerticalImages();
+        // System.out.println("Scale vertical");
+        // pr.scaleVerticalImages();
         
  
         
-        System.out.println("Save preprocessed Images");
+        //System.out.println("Save preprocessed Images");
         pr.writeImages();
     }
  }
