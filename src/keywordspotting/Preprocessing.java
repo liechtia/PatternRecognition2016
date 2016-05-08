@@ -266,7 +266,7 @@ public class Preprocessing {
              }
              
          }
-         System.out.println("ymax=" + yMax);
+         //System.out.println("ymax=" + yMax);
          //calculate average number of pixels in each row
          int average  = 0;
          int numberOfRows = 0;
@@ -326,11 +326,10 @@ public class Preprocessing {
              {
                  yMin = i;
                  minNumberOfBlackPixels = numberOfBlackPixels;
-                 System.out.println("MIKROTERO:"+i);
-                 System.out.println(numberOfBlackPixels);
+                 //System.out.println(numberOfBlackPixels);
              }
          }
-         System.out.println("ymin=" + yMin);
+         //System.out.println("ymin=" + yMin);
          //find row after yMin with more or equal average pixel 
          int upperBaseLineY = 0;
          for(int i = yMin; i < imageClipped.getHeight(); i++)
@@ -350,8 +349,24 @@ public class Preprocessing {
              }
          }
          
-        int  lowerBaseLineY = Pruning.getLowerBaseLine(imageClipped);
+        int  lowerBaseLineY = 0; //Pruning.getLowerBaseLine(imageClipped);
          
+        for(int i = upperBaseLineY; i < imageClipped.getHeight(); i++)
+        {
+            int numberOfBlackPixels = 0;
+            for(int j = 0; j < imageClipped.getWidth(); j++){
+                if(imageClipped.getRGB(j, i) !=new Color(255, 255, 255).getRGB() )
+                {
+                    numberOfBlackPixels++;
+                }
+            }
+            
+            if(numberOfBlackPixels >= average)
+            {
+                lowerBaseLineY = i;
+            }
+        }
+        
       /*   System.out.println("height: " + imageClipped.getHeight());
          System.out.println("ymax  " +yMax);
          System.out.println("average " + average);
@@ -364,7 +379,6 @@ public class Preprocessing {
          System.out.println(imageClipped.getHeight());
          System.out.println(upperBaseLineY);
          System.out.println(lowerBaseLineY);
-         System.out.println("narkotika");
          
          BufferedImage area1 ;
          if(upperBaseLineY > 0)

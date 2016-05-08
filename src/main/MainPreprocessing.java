@@ -40,7 +40,7 @@ public class MainPreprocessing {
             BufferedImage image = ImageIO.read(imageFile);
             keywordimage.setImage(image);
             pr.addImage(keywordimage);
-            i += 1;
+            i += 1; 
         }
         
         System.out.println("Binarize");
@@ -57,10 +57,10 @@ public class MainPreprocessing {
         System.out.println("Cut columns at beginning");
         pr.cutColumnsImages();
    
-      //  pr.getComponentsImages();
+        //pr.getComponentsImages();
         
-        // System.out.println("Scale vertical");
-        // pr.scaleVerticalImages();
+        System.out.println("Scale vertical");
+        pr.scaleVerticalImages();
         
  
         

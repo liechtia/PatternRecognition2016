@@ -77,7 +77,6 @@ public class Pruning {
     
     public static int getLowerBaseLine(BufferedImage image)
     {
-        int treshold = 150;
         int[] histogram = new int[image.getHeight()];
         
         int black = new Color(0, 0, 0).getRGB();
@@ -96,7 +95,7 @@ public class Pruning {
         
         int maxDiff = 0;
         int maxDiffIdx = -1;
-        for(int i = 1 ; i < image.getHeight(); i++)
+        for(int i =  image.getHeight() - 1 ; i > 0; i--)
         {
             int diff=Math.abs(histogram[i-1]-histogram[i]);
             
@@ -104,6 +103,7 @@ public class Pruning {
             {
                 maxDiff = diff;
                 maxDiffIdx = i;
+                System.out.println(maxDiff + " "+ i);
             }
             
         }
