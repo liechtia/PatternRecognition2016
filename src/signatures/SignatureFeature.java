@@ -10,4 +10,10 @@ public class SignatureFeature{
     public double inclination;
     public double vx;
     public double vy;
+    
+    public double[] getAllFeatures() {
+        //double[] allFeatures = new double[]{t, x, y, pressure, penup, azimuth, inclination, vx, vy};
+        double[] allFeatures = new double[]{x, y, pressure, vx, vy};
+        return allFeatures;
+    }
 }	
