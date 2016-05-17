@@ -6,8 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
+import utils.FtVector;
+
 public class SignatureLoader {
-	public Signature[] LoadSignatures(boolean enrollment, String path) throws IOException{
+	public List<Signature> LoadSignatures(boolean enrollment, String path) throws IOException{
 		List<Signature> sigs = new ArrayList();
 		File dir = new File(path);
 		File[] files = dir.listFiles();
@@ -27,7 +29,7 @@ public class SignatureLoader {
 			
 			BufferedReader reader = new BufferedReader(new FileReader(file));
 	        String features;
-	        List<SignatureFeature> featureList = new ArrayList();
+	        List<FtVector> featureList = new ArrayList();
 	        double deltaTime = 0.0;
 	        double deltaX = 0.0;
 	        double deltaY = 0.0;
@@ -60,27 +62,19 @@ public class SignatureLoader {
 	        	deltaTime = Double.parseDouble(elem[0]);
 	        }
 	        
-	        SignatureFeature[] featureArray = new SignatureFeature[featureList.size()];
-	        for(int i = 0;i < featureArray.length;i++)
-	            featureArray[i] = featureList.get(i);
-	        
-	        signature.features = featureArray;
+	        signature.features = featureList;
 	        
 	        sigs.add(signature);
 		}
-		
-        Signature[] sigArray = new Signature[sigs.size()];
-        for(int i = 0;i < sigArray.length;i++)
-            sigArray[i] = sigs.get(i);
 	
-		return sigArray;		
+		return sigs;		
 	}
 	
-	public Signature[] LoadVerificationSignatures() throws IOException{
+	public List<Signature> LoadVerificationSignatures() throws IOException{
 		return LoadSignatures(false, "SignatureVerificationData/verification");
 	}
 	
-	public Signature[] LoadEnrollmentSignatures() throws IOException{
+	public List<Signature> LoadEnrollmentSignatures() throws IOException{
 		return LoadSignatures(true, "SignatureVerificationData/enrollment");
 	}
 	

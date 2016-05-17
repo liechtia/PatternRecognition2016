@@ -8,16 +8,19 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
+import utils.DTWFeatureVector;
 import utils.FeatureVector;
+import utils.FtVector;
 
-public class KeywordImage{
+public class KeywordImage implements DTWFeatureVector{
 
     private String label;
     private File file;
     private int line;
     private int wordInLine;
-    private ArrayList<FeatureVector> features = new ArrayList<FeatureVector>();
+    private ArrayList<FtVector> features = new ArrayList<FtVector>();
     private BufferedImage image; 
     private ArrayList<ArrayList<Double>> featureList = new ArrayList<ArrayList<Double>>(); 
     private double meanOfStrokesPerPixel;
@@ -43,7 +46,7 @@ public class KeywordImage{
         return this.label;
     }
     
-    public ArrayList<FeatureVector> getFeatureVectors()
+    public List<FtVector> getFeatureVectors()
     {
         return this.features;
     }
@@ -88,7 +91,7 @@ public class KeywordImage{
         this.label = label;
     }
 
-    public void setFeatures(ArrayList<FeatureVector> features) {
+    public void setFeatures(ArrayList<FtVector> features) {
         this.features = features;
     }
     
@@ -103,7 +106,7 @@ public class KeywordImage{
             int width = image.getWidth();
             int height = image.getHeight();
             
-            features = new ArrayList<FeatureVector>();
+            features = new ArrayList<FtVector>();
             
             
             int[][] pixels = new int[width][height];

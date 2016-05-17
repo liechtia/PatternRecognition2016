@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import utils.DTWFeatureVector;
 import utils.DTWResult;
 import utils.FeatureVector;
+import utils.FtVector;
 import utils.Tuple;
 
 public class DTW {
@@ -24,13 +26,13 @@ public class DTW {
 	 * @return A list of DTWResult objects. A DTWResult contains a training image and
 	 * its computed distance to testImage. The results are ordered by ascending distance.
 	 */
-	public List<DTWResult> findSimilar(Map<String, ArrayList<KeywordImage>> trainingImages, KeywordImage testImage,
+	public List<DTWResult> findSimilar(Map<String, ArrayList<DTWFeatureVector>> trainingImages, DTWFeatureVector testImage,
 							int band) {
 		List<DTWResult> result = new ArrayList<DTWResult>();
 		
-        for (Entry<String, ArrayList<KeywordImage>> entry: trainingImages.entrySet()) {
-        	List<KeywordImage> images = entry.getValue();
-        	for (KeywordImage i: images) {
+        for (Entry<String, ArrayList<DTWFeatureVector>> entry: trainingImages.entrySet()) {
+        	List<DTWFeatureVector> images = entry.getValue();
+        	for (DTWFeatureVector i: images) {
         		double distance = computeDTW(i, testImage, band);
         		result.add(new DTWResult(i, distance));
         	}
@@ -53,10 +55,10 @@ public class DTW {
 	 * it computes the DTW distance between the images.
 	 * The distance metric used is Euclidean distance.
 	 */
-	public static double computeDTW(KeywordImage trainImage, KeywordImage testImage,
+	public static double computeDTW(DTWFeatureVector trainImage, DTWFeatureVector testImage,
 							 int band) {
-		List<FeatureVector> train = trainImage.getFeatureVectors();
-		List<FeatureVector> test = testImage.getFeatureVectors();
+		List<FtVector> train = trainImage.getFeatureVectors();
+		List<FtVector> test = testImage.getFeatureVectors();
 		
 		int n = train.size(); // The length of the sequences
 		int m = test.size();
@@ -151,9 +153,9 @@ public class DTW {
 	/**
 	 * Compute Euclidean distance between two feature vectors of the same length.
 	 */
- 	public static double calcDistance(FeatureVector vector1, FeatureVector vector2) {
- 		double[] v1 = vector1.getAllFeatures();
-		double[] v2 = vector2.getAllFeatures();
+ 	public static double calcDistance(FtVector ftVector, FtVector ftVector2) {
+ 		double[] v1 = ftVector.getAllFeatures();
+		double[] v2 = ftVector2.getAllFeatures();
  		double distance = 0.0;
 		for (int i = 0; i < v1.length; i++) {
 			distance += (v1[i] - v2[i]) * (v1[i] - v2[i]);

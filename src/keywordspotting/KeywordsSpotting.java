@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import utils.Distance;
 import utils.FeatureVector;
+import utils.FtVector;
 
 public class KeywordsSpotting {
 
@@ -71,7 +72,7 @@ public class KeywordsSpotting {
     {
         img.slidingWindow(); 
         
-       for(FeatureVector fv : img.getFeatureVectors())
+       for(FtVector fv : img.getFeatureVectors())
         {
             fv.normFeatures();
         }

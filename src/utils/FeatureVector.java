@@ -5,7 +5,7 @@ import knn.DataExample;
 
 
 
-public class FeatureVector {
+public class FeatureVector implements FtVector {
 
     private double gravityOfWindow = 0;
     private double secondOrderMoment  = 0; 

@@ -1,6 +1,12 @@
 package signatures;
 
-public class SignatureFeature{
+import java.util.List;
+
+import utils.DTWFeatureVector;
+import utils.FeatureVector;
+import utils.FtVector;
+
+public class SignatureFeature implements FtVector{
     public double t;
     public double x;
     public double y;
@@ -15,5 +21,10 @@ public class SignatureFeature{
         //double[] allFeatures = new double[]{t, x, y, pressure, penup, azimuth, inclination, vx, vy};
         double[] allFeatures = new double[]{x, y, pressure, vx, vy};
         return allFeatures;
-    }
+	}
+
+	@Override
+	public void normFeatures() {
+		// unused in signature verification
+	}
 }	

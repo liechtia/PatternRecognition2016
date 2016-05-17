@@ -3,15 +3,15 @@ package utils;
 import keywordspotting.KeywordImage;
 
 public class DTWResult {
-	private KeywordImage image;
+	private DTWFeatureVector image;
 	private double distance;
 	
-	public DTWResult(KeywordImage image, double distance) {
-		this.image = image;
+	public DTWResult(DTWFeatureVector i, double distance) {
+		this.image = i;
 		this.distance = distance;
 	}
 	
-	public KeywordImage getImage() {
+	public DTWFeatureVector getImage() {
 		return image;
 	}
 	public void setImage(KeywordImage image) {
