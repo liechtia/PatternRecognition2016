@@ -1,52 +1,94 @@
 package signatures;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import keywordspotting.DTW;
-import keywordspotting.KeywordImage;
-import utils.DTWResult;
-import utils.Distance;
-import utils.FeatureVector;
-import utils.Tuple;
 
 public class SignatureVerification {
-	private int[] users;
-	private GroundTruth[] gts;
+	private List<Integer> users;
 	private List<Signature> enrollment;
 	private List<Signature> verification;
-	private SignatureResult[] results;
+	private List<SignatureResult> results;
+	private SignatureLoader loader;
 	
 	public SignatureVerification() throws IOException{
-		SignatureLoader loader = new SignatureLoader();
+		loader = new SignatureLoader();
         users = loader.LoadUsers();
-        gts = loader.LoadGroundTruth();
+        loader.LoadGroundTruth();
         enrollment = loader.LoadEnrollmentSignatures();
         verification = loader.LoadVerificationSignatures();
 	}
 	
-	public void RunVerification(){
-	   List<SignatureResult> res = new ArrayList();
+	public void RunVerification() throws IOException{
+	   results = new ArrayList<SignatureResult>();
        for(Signature verificationSig : verification){
+    	   SignatureResult result = new SignatureResult();
+    	   int ctr = 0;
     	   for(Signature enrollmentSig : enrollment){
     		   if (enrollmentSig.user == verificationSig.user){
-    			   double score = DTW.computeDTW(enrollmentSig, verificationSig, 10);  
-    			   res.add(new SignatureResult(enrollmentSig.user, enrollmentSig, verificationSig, score));
+    			   double score = DTW.computeDTW(enrollmentSig, verificationSig, 10);
+    			   result.user = enrollmentSig.user; 
+    			   result.verification = verificationSig;
+    			   result.distance += score;    
+    			   ctr++;
     		   }   
     	   }
+    	   
+    	   //calculate average
+    	   result.distance = result.distance/ctr;
+    	   
+    	   results.add(result);
+		   //System.out.println(" u: " + result.user + " d: " + "v: " + result.verification.number + result.distance);
         }
        
-       results = new SignatureResult[res.size()];
-       for(int i = 0;i < results.length;i++)
-           results[i] = res.get(i);
-       
-       for(int i=0;i<users.length;i++){
-    	   // TODO evaluation of results
-       }
+       //evaluate and write results
+       evaluateResults();
+	}
+
+	/**
+	 * @throws IOException
+	 */
+	private void evaluateResults() throws IOException {
+		BufferedWriter output = null;
+		   File file = new File("results/signature.txt");
+		   output = new BufferedWriter(new FileWriter(file));
+		   
+		   for(Integer user : users){  
+		       output.write(user.toString());
+		       
+		       List<SignatureResult> resultsForUser = new ArrayList<SignatureResult>();
+		       
+		       for(SignatureResult result : results){
+		    	   if (result.user == user){
+		    		   resultsForUser.add(result);
+		    	   }
+		       }
+		       
+		       Collections.sort(resultsForUser, new SignatureResultComparator());
+		       DecimalFormat formatter = new DecimalFormat("#0.00");
+		       
+		       for (SignatureResult resultForUser : resultsForUser){
+		    	   output.write(", " + resultForUser.verification.number + ", " + formatter.format(resultForUser.distance));
+		    	   
+/*        	   boolean truth = resultForUser.isGenuine(loader);
+		    	   if (truth){
+		    		   output.write(", true");
+		    	   }
+		    	   else{
+		    		   output.write("false");
+		    	   }*/
+		       }
+		    
+		       output.newLine();
+		   }
+		   
+		   output.close();
 	}	
 }
