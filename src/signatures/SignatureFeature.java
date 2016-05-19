@@ -1,5 +1,6 @@
 package signatures;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import utils.DTWFeatureVector;
@@ -26,5 +27,11 @@ public class SignatureFeature implements FtVector{
 	@Override
 	public void normFeatures() {
 		// unused in signature verification
+	}
+	
+	@Override
+	public ArrayList<Double> getFeatures() {
+		// unused in signature verification
+		return null;
 	}
 }	
