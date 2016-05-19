@@ -16,7 +16,7 @@ import utils.DTWResult;
 import utils.FeatureVector;
 import utils.FtVector;
 
-public class MainSmoothingEdges {
+public class MainGaussian {
 
     public static void main(String[] args) throws IOException {
     	
@@ -141,18 +141,18 @@ public class MainSmoothingEdges {
                 }
             });
             
-            System.out.println("FINISHED ------------------------------------------------");
-            System.out.println("Keyword is: " + k);
+            System.out.println("------------------------------------------------");
+            System.out.println("Keyword to be spotted: " + k);
             KeywordImage im = (KeywordImage) results.get(0).getImage();
             KeywordImage im2 = (KeywordImage) results.get(1).getImage();
             KeywordImage im3 = (KeywordImage) results.get(2).getImage();
             KeywordImage im4 = (KeywordImage) results.get(3).getImage();
             KeywordImage im5 = (KeywordImage) results.get(4).getImage();
             System.out.println("Best is: " + im.getLabel());
-            System.out.println("2 is: " + im2.getLabel());
-            System.out.println("3 is: " + im3.getLabel());
-            System.out.println("4 is: " + im4.getLabel());
-            System.out.println("5 is: " + im5.getLabel());
+            System.out.println("2nd is: " + im2.getLabel());
+            System.out.println("3rd is: " + im3.getLabel());
+            System.out.println("4th is: " + im4.getLabel());
+            System.out.println("5th is: " + im5.getLabel());
         }
 
     }
