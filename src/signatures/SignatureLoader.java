@@ -9,6 +9,12 @@ import java.util.Scanner;
 import utils.FtVector;
 
 public class SignatureLoader {
+	private ArrayList<GroundTruth> groundTruth;
+	
+	public SignatureLoader(){
+		groundTruth = new ArrayList<GroundTruth>();
+	}
+	
 	public List<Signature> LoadSignatures(boolean enrollment, String path) throws IOException{
 		List<Signature> sigs = new ArrayList();
 		File dir = new File(path);
@@ -78,7 +84,7 @@ public class SignatureLoader {
 		return LoadSignatures(true, "SignatureVerificationData/enrollment");
 	}
 	
-    public int[] LoadUsers() throws FileNotFoundException {
+    public List<Integer> LoadUsers() throws FileNotFoundException {
         List<Integer> users = new ArrayList<>();
         File file = new File( "SignatureVerificationData/users.txt");
         Scanner scanner = new Scanner(file);
@@ -86,15 +92,15 @@ public class SignatureLoader {
             users.add(scanner.nextInt());
         }
 
-        int[] usersList = new int[users.size()];
-        for(int i = 0;i < usersList.length;i++)
-            usersList[i] = users.get(i);
-
-        return usersList;
+        return users;
     }
 
-    public GroundTruth[] LoadGroundTruth() throws IOException {
-        List<GroundTruth> groundTruth = new ArrayList<>();
+    public ArrayList<GroundTruth> LoadGroundTruth() throws IOException {
+    	if (!groundTruth.isEmpty()){
+    		return groundTruth;
+    	}
+    	
+        groundTruth = new ArrayList<>();
         File file = new File( "SignatureVerificationData/verification-gt.txt");
         BufferedReader reader = new BufferedReader(new FileReader(file));
         String gt;
@@ -114,10 +120,6 @@ public class SignatureLoader {
             groundTruth.add(signatures);
         }
 
-        GroundTruth[] gtList = new GroundTruth[groundTruth.size()];
-        for(int i = 0; i < gtList.length; i++)
-            gtList[i] = groundTruth.get(i);
-
-        return gtList;
+        return groundTruth;
     }
 }
