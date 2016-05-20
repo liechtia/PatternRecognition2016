@@ -11,14 +11,12 @@ public class Distance {
     KeywordImage image;
    
     
-    public Distance(KeywordImage image) {
+    public Distance(KeywordImage image, double distance) {
         this.image= image;
+        this.score = distance;
     }
     
-    public void addScore(double score)
-    {
-        this.score += score; 
-    }
+
     
     public KeywordImage getImage() {  return this.image;}
     public double getScore() { return this.score;} 

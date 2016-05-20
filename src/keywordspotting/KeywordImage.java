@@ -140,214 +140,19 @@ public class KeywordImage implements DTWFeatureVector{
             fV1.setGradient(0, 0);
           
     }
-    
-    private int[] findBaseLines(BufferedImage imageClipped)
-    {
-        int[] r = new int[2];
         
-        int maxNumberOfBlackPixels = 0;
-        int yMax = 0;
-      //find peak line
-        for(int i = 0; i < imageClipped.getHeight(); i++)
-        { 
-            int numberOfBlackPixels = 0;
-            for(int j = 0; j < imageClipped.getWidth(); j++){
-                if(imageClipped.getRGB(j, i) !=new Color(255, 255, 255).getRGB() )
-                {
-                    numberOfBlackPixels++;
-                }
-            }
-            
-            if(numberOfBlackPixels > maxNumberOfBlackPixels)
-            {
-                yMax = i; 
-                maxNumberOfBlackPixels = numberOfBlackPixels;
-            }
-            
-        }
-        
-        //calculate average number of pixels in each row
-        int average  = 0;
-        int numberOfRows = 0;
-        int maxTransitions = 0; 
-        for(int i = 0; i < imageClipped.getHeight(); i++)
-        { 
-            int numberOfBlackPixels = 0;
-            boolean blackpixel = false;
-            int transistions = 0;
-            for(int j = 0; j < imageClipped.getWidth(); j++){
-                if(imageClipped.getRGB(j, i) !=new Color(255, 255, 255).getRGB() )
-                {
-                    numberOfBlackPixels++;
-                    
-                    if(!blackpixel)
-                    {
-                        blackpixel = true;
-                        transistions++;
-                    }
-                }
-                else
-                {
-                    blackpixel = false; 
-                }
-            }
-            
-            if(transistions > maxTransitions)
-            {
-                maxTransitions = transistions; 
-            }
 
-            average += numberOfBlackPixels;
-
-        }
-       
-        average =  average / imageClipped.getHeight();
-
-            if(average == 0)
-            {
-                return null;
-            }
-        
-        //find row with min number of black pixels before peak line
-        int minNumberOfBlackPixels = Integer.MAX_VALUE;
-        int yMin = 0;
-        for(int i = 0; i < yMax; i++)
-        {
-            int numberOfBlackPixels = 0;
-            for(int j = 0; j < imageClipped.getWidth(); j++){
-                if(imageClipped.getRGB(j, i) !=new Color(255, 255, 255).getRGB() )
-                {
-                    numberOfBlackPixels++;
-                }
-            }
-            
-            if(numberOfBlackPixels > 0 && numberOfBlackPixels < minNumberOfBlackPixels)
-            {
-                yMin = i;
-                minNumberOfBlackPixels = numberOfBlackPixels;
-            }
-        }
-        
-        //find row after yMin with more or equal average pixel 
-        int upperBaseLineY = 0;
-        for(int i = yMin; i < imageClipped.getHeight(); i++)
-        {
-            int numberOfBlackPixels = 0;
-            for(int j = 0; j < imageClipped.getWidth(); j++){
-                if(imageClipped.getRGB(j, i) !=new Color(255, 255, 255).getRGB() )
-                {
-                    numberOfBlackPixels++;
-                }
-            }
-            
-            if(numberOfBlackPixels >= average)
-            {
-                upperBaseLineY = i;
-                break; 
-            }
-        }
-        
-        /************LOWER BASELINE**********************/
-        int minPixY = imageClipped.getHeight()-1;
-        minNumberOfBlackPixels = Integer.MAX_VALUE; 
-        for(int i = yMax+1; i < imageClipped.getHeight(); i++) 
-        {
-                int numberOfBlackPixels = 0;
-            for(int j = 0; j < imageClipped.getWidth(); j++){
-                if(imageClipped.getRGB(j, i) !=new Color(255, 255, 255).getRGB() )
-                {
-                    numberOfBlackPixels++;
-                }
-            }
-            
-            if(numberOfBlackPixels > 0 && numberOfBlackPixels < minNumberOfBlackPixels)
-            {
-                minPixY = i;
-                minNumberOfBlackPixels = numberOfBlackPixels;
-            }
-        }
-
-       
-        int avgPixY = 0;
-        for(int i = minPixY; i > 0; i--)
-        {
-            int numberOfBlackPixels = 0;
-            for(int j = 0; j < imageClipped.getWidth(); j++){
-                if(imageClipped.getRGB(j, i) !=new Color(255, 255, 255).getRGB() )
-                {
-                    numberOfBlackPixels++;
-                }
-            }
-            
-            if(numberOfBlackPixels >= average)
-            {
-                avgPixY = i;
-                break; 
-            }
-        }
-        
-        int lowerBaseLineY;
-        if((minPixY-avgPixY) < (avgPixY - upperBaseLineY))
-        {
-            lowerBaseLineY = minPixY;
-        }
-        else{
-            lowerBaseLineY=avgPixY; 
-        }
-        
-        r[0] = upperBaseLineY;
-        r[1] = lowerBaseLineY;
-        return r; 
-    }
-    
-    private int pixelsAboveBaseline(int[] vector, int upperBaseLine)
-    {
-        int pixel  = 0;
-        for(int i = 0; i < upperBaseLine; i++)
-        {
-           if( vector[i]==0 )
-               pixel++;
-        }
-        
-        return pixel;
-    }
-    
-    
-    private int pixelsBetweenBaseline(int[] vector, int upperBaseLine, int lowerBaseLine)
-    {
-        int pixel  = 0;
-        for(int i = upperBaseLine; i < lowerBaseLine; i++)
-        {
-           if( vector[i]==0 )
-               pixel++;
-        }
-        
-        return pixel;
-    }
-    
-   
-    
-    private int pixelsUnderBaseline(int[] vector, int lowerBaseLine)
-    {
-        int pixel  = 0;
-        for(int i = lowerBaseLine; i < vector.length; i++)
-        {
-           if( vector[i]==0 )
-               pixel++;
-        }
-        
-        return pixel;
-    }
     
     private FeatureVector getFeatures(int[] vector)
     {
         
-        int weightOfWindow = 0;
+        int verticalProjectionProfile = 0; //number of black pixels
         double gravityOfWindow = 0;
         double secondOrderMoment = 0;
+        int upperContour=0;
+        int lowerContour=0;      
         int bwTransitions = 0;
-        int lowerContour=-1;
-        int upperContour=-1;
+
         int numberOfPixelsBetweenLcUc=0;
         
         
@@ -360,7 +165,7 @@ public class KeywordImage implements DTWFeatureVector{
             if(vector[i]==1 && !lc)
             {
                 lowerContour=i;
-                weightOfWindow++;
+                verticalProjectionProfile++;
                 
                 gravityOfWindow += (i+1)*1;
                 secondOrderMoment += (i+1)*(i+1);
@@ -376,7 +181,7 @@ public class KeywordImage implements DTWFeatureVector{
             if(vector[i]==1)
             {
                 upperContour = i; 
-                weightOfWindow++;
+                verticalProjectionProfile++;
                 
                 gravityOfWindow += (i+1)*1;
                 secondOrderMoment += (i+1)*(i+1);
@@ -400,20 +205,72 @@ public class KeywordImage implements DTWFeatureVector{
         numberOfPixelsBetweenLcUc = upperContour - lowerContour; 
         
       //  double fractionOfBlackPixels = numberOfBlackPixels / (vector.length+ 0.0); 
-        double fractionUcLc = numberOfPixelsBetweenLcUc /(vector.length+0.0);
+        //double fractionUcLc = numberOfPixelsBetweenLcUc /(vector.length+0.0);
 
         
         FeatureVector fV  = new FeatureVector();
         fV.setBwTransistions( bwTransitions);
-        fV.setWeightOfWindow(weightOfWindow);
-        fV.setFractionUcLc(fractionUcLc);
+        fV.setFractionUcLc(numberOfPixelsBetweenLcUc);
         fV.setLowerContour(lowerContour);
         fV.setUpperContour(upperContour);
         fV.setGravityOfWindow(gravityOfWindow/vector.length);
         fV.setSecondOrderMoment(secondOrderMoment/(vector.length*vector.length));
+        fV.setVerticalWordProfile(verticalProjectionProfile);
         
        
         return fV;
+        
+    }
+    
+    
+    public double[][] array;
+    public void formFeatureArray()
+    {        
+        array = new double[features.size()][9];
+        
+        for(int i = 0;i  < features.size(); i++)
+        {
+            FtVector fv = this.features.get(i);
+            double[] x = fv.getAllFeatures();
+            array[i] = x;          
+        }
+    }
+    
+    public void normFeatures()
+    {
+            for(int i = 0; i < array.length; i++)
+            {
+               array[i] = normFeature(array[i]);
+            }
+    }
+    
+    private double[] normFeature(double[] x)
+    {
+        double max = 0; 
+        double min = Integer.MAX_VALUE;
+        
+        for(int i = 0; i < x.length; i++)
+        {
+            if(x[i] > max)
+            {
+                max = x[i];
+            }
+            
+            if(x[i] < min)
+            {
+                min = x[i];
+            }
+        }
+        
+        for(int i = 0; i < x.length; i++)
+        {
+           x[i] = (x[i]-min) / (max-min); 
+        }
+       
+        
+        return x; 
+        
+        
         
     }
     
