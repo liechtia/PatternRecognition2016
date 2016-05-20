@@ -33,7 +33,7 @@ public class SignatureVerification {
     	   int ctr = 0;
     	   for(Signature enrollmentSig : enrollment){
     		   if (enrollmentSig.user == verificationSig.user){
-    			   double score = DTW.computeDTW(enrollmentSig, verificationSig, 10);
+    			   double score = DTW.computeDTW(enrollmentSig.formFeatureArray(), verificationSig.formFeatureArray(), 10);
     			   result.user = enrollmentSig.user; 
     			   result.verification = verificationSig;
     			   result.distance += score;    
