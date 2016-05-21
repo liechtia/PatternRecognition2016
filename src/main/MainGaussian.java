@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import keywordspotting.DTWOld;
+import keywordspotting.DTW;
 import keywordspotting.KeywordImage;
 import utils.DTWResult;
 import utils.FeatureVector;
@@ -124,7 +124,7 @@ public class MainGaussian {
             List<DTWResult> results = new ArrayList<DTWResult>();
             
             for (KeywordImage v: validImages) {
-            	DTWOld dtw = new DTWOld();
+            	DTW dtw = new DTW();
             	double res = dtw.computeDTW(trainKeyword, v, 10);
             	// System.out.println(res);
             	
