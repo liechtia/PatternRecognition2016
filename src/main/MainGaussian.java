@@ -1,9 +1,11 @@
 package main;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -96,16 +98,9 @@ public class MainGaussian {
         
         System.out.println("Get Features");
         
-        // Test
-//        for (KeywordImage k: trainingImages) {
-//        	List<FtVector> vectors = k.getFeatureVectors();
-//        	for (FtVector ff: vectors) {
-//        		ArrayList<Double> featureVector = ff.getFeatures();
-//        		for (double f: featureVector) {
-//        			System.out.println(f);
-//        		}
-//        	}
-//        }
+        
+        FileWriter fw = new FileWriter("results/keywordspottingGaussian.txt");
+		BufferedWriter bw = new BufferedWriter(fw);
         
         // For each keyword
         for (String k: keywords) {
@@ -141,6 +136,8 @@ public class MainGaussian {
                 }
             });
             
+            writeToFile(bw, k, results);
+            
             System.out.println("------------------------------------------------");
             System.out.println("Keyword to be spotted: " + k);
             KeywordImage im = (KeywordImage) results.get(0).getImage();
@@ -154,7 +151,8 @@ public class MainGaussian {
             System.out.println("4th is: " + im4.getLabel());
             System.out.println("5th is: " + im5.getLabel());
         }
-
+        
+        bw.close();
     }
           
     private static ArrayList<String> readFile(File f)
@@ -178,9 +176,17 @@ public class MainGaussian {
             e.printStackTrace();
         }
         
-        return files; 
-        
-        
+        return files;   
     }
 
+    private static void writeToFile(BufferedWriter bw, String keyword, List<DTWResult> results)
+    		throws IOException {
+    	String s = keyword;
+    	for (DTWResult r: results) {
+    		KeywordImage ki = (KeywordImage) r.getImage();
+    		s += ", " + ki.getLabel() + ", " + (int) r.getDistance();
+    	}
+    	bw.write(s);
+    	bw.newLine();
+    }  
 }
