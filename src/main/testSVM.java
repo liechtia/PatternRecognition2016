@@ -1,5 +1,7 @@
 package main;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -22,20 +24,20 @@ import weka.core.Instances;
 public class testSVM {
 
 	
-        public static void main(String[] args) {
+        public static void main(String[] args) throws IOException {
             String traningsFile = "data/trainAll.csv";
             String testFile = "data/test.csv";
                     
            //read the files and convert to arff 
            String arffTrain = readDataAndConvertToArff(traningsFile);
            String arffTest = readDataAndConvertToArff(testFile); 
-
+        	
            System.out.println("Test RBF Kernel:");
            callSvmToGetBestValues(arffTrain, arffTest, SVM.KERNEL_RBF_STRING);
            
-           System.out.println("");
-           System.out.println("Test Linear Kernel:");
-           callSvmToGetBestValues(arffTrain, arffTest, SVM.KERNEL_LINEAR_STRING);
+           //System.out.println("");
+           //System.out.println("Test Linear Kernel:");
+           //callSvmToGetBestValues(arffTrain, arffTest, SVM.KERNEL_LINEAR_STRING);
           
 
         }
@@ -46,8 +48,9 @@ public class testSVM {
          * @param trainFile - Path to the file with the training examples
          * @param testFile - Path to the file with the testing examples
          * @param kernel - Kernel to use 
+         * @throws IOException 
          */
-        private static  void callSvmToGetBestValues(String trainFile, String testFile, String kernel )
+        private static  void callSvmToGetBestValues(String trainFile, String testFile, String kernel ) throws IOException
         {        	      	
         	DataReader reader = new DataReader(trainFile, testFile);
         	Instances instances  = reader.getKTrainData(1000);
@@ -76,8 +79,23 @@ public class testSVM {
             System.setOut(originalStream);
             Evaluation eval = svm.evaluateModel();
             
+    		FileWriter f1 = new FileWriter("results/svm_results.txt");
+    		String newLine = System.getProperty("line.separator");
+
+    		for (int i = 0; i < test.numInstances(); i++) {
+    			double pred = 0;
+				try {
+					pred = svm.getclassifier().classifyInstance(test.instance(i));
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    			f1.write(i +", "+ test.classAttribute().value((int) pred) + newLine);
+    			//System.out.print("ID: " + test.instance(i).value(0));
+    			//System.out.println(", predicted: " + test.classAttribute().value((int) pred));
+    			}
             //write final results in a file 
-            IO_Functions.printFinalResult(eval, "svm/", kernel, result.getPowC(), result.getPowGamma());
+            //IO_Functions.printFinalResult(eval, "svm/", kernel, result.getPowC(), result.getPowGamma());
         	
         
         }

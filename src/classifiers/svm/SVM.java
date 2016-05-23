@@ -148,6 +148,9 @@ public class SVM {
         }
     }
     
+    public LibSVM getclassifier(){
+    	return this.svm;
+    }
     
     /**
      * Function to evaluate the model 

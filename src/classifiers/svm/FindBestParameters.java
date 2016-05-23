@@ -132,7 +132,7 @@ public class FindBestParameters{
                 CrossValidation[] svms = new CrossValidation[numberOfThreads];
                 for(int t =0 ; t < threads.length; t++ )
                 {
-                    CrossValidation cv1 = new CrossValidation(cvSets, kernel, c, powC, gammaValues.get(keys[i+t]), (double) keys[i+t]);
+                    CrossValidation cv1 = new CrossValidation(cvSets, kernel, c, powC, gammaValues.get(keys[i+t]), (Double) keys[i+t]);
                     Thread t1 = new Thread(cv1);
                     t1.start();
                     threads[t] = t1; 

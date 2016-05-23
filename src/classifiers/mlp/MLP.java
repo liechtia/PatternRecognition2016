@@ -1,5 +1,6 @@
 package classifiers.mlp;
 
+import java.io.FileWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -338,6 +339,17 @@ public final class MLP {
 		
 		eval.evaluateModel(mlp, test);
 		double testError = eval.errorRate();
+		
+		
+		FileWriter f1 = new FileWriter("results/mlp_results.txt");
+		String newLine = System.getProperty("line.separator");
+
+		for (int i = 0; i < test.numInstances(); i++) {
+			double pred = mlp.classifyInstance(test.instance(i));
+			f1.write(i +", "+ test.classAttribute().value((int) pred) + newLine);
+			//System.out.print("ID: " + test.instance(i).value(0));
+			//System.out.println(", predicted: " + test.classAttribute().value((int) pred));
+			}
 		
 		System.out.println("Train error: " + trainError);
 		System.out.println("Test error: " + testError);
