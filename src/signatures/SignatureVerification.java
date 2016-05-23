@@ -21,7 +21,7 @@ public class SignatureVerification {
 	public SignatureVerification() throws IOException{
 		loader = new SignatureLoader();
         users = loader.LoadUsers();
-        loader.LoadGroundTruth();
+        //loader.LoadGroundTruth();
         enrollment = loader.LoadEnrollmentSignatures();
         verification = loader.LoadVerificationSignatures();
 	}
@@ -55,9 +55,9 @@ public class SignatureVerification {
 	/**
 	 * @throws IOException
 	 */
-	private void evaluateResults() throws IOException {
+	private void evaluateResults() throws IOException {		
 		BufferedWriter output = null;
-		   File file = new File("results/signature.txt");
+		   File file = new File("results/signature_results.txt");
 		   output = new BufferedWriter(new FileWriter(file));
 		   
 		   for(Integer user : users){  
@@ -79,7 +79,7 @@ public class SignatureVerification {
 		    	   
 /*        	   boolean truth = resultForUser.isGenuine(loader);
 		    	   if (truth){
-		    		   output.write(", true");
+		    		   output.write("true");
 		    	   }
 		    	   else{
 		    		   output.write("false");

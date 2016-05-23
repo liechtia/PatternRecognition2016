@@ -77,16 +77,16 @@ public class SignatureLoader {
 	}
 	
 	public List<Signature> LoadVerificationSignatures() throws IOException{
-		return LoadSignatures(false, "SignatureVerificationData/verification");
+		return LoadSignatures(false, "SignatureVerificationData/TestSignatures/verification");
 	}
 	
 	public List<Signature> LoadEnrollmentSignatures() throws IOException{
-		return LoadSignatures(true, "SignatureVerificationData/enrollment");
+		return LoadSignatures(true, "SignatureVerificationData/TestSignatures/enrollment");
 	}
 	
     public List<Integer> LoadUsers() throws FileNotFoundException {
         List<Integer> users = new ArrayList<>();
-        File file = new File( "SignatureVerificationData/users.txt");
+        File file = new File( "SignatureVerificationData/TestSignatures/users.txt");
         Scanner scanner = new Scanner(file);
         while(scanner.hasNextInt()) {
             users.add(scanner.nextInt());
