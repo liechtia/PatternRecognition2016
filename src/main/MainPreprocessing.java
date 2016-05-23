@@ -11,16 +11,17 @@ import keywordspotting.Preprocessing;
 
 public class MainPreprocessing {
 
-    private static final String folderClipped = "KeywordSpottingData/wordimages/clipped/";
-    private static final String folderClippedSave = "KeywordSpottingData/wordimages/final_clipped/";
+    private static final String folder ="KeywordSpottingData_Test";
+    private static final String folderClipped = folder + "/wordimages/clipped/";
+    private static final String folderClippedSave = folder + "/wordimages/final_clipped/";
     
     public static void main(String[] args) throws IOException {
         File folderImages = new File(folderClipped);
         File[] images = folderImages.listFiles();
         
-        int tresholdBackground = 170;
-        double alphaMin = -45;
-        double alphaMax = 60; 
+        int tresholdBackground = 150;
+        double alphaMin = -90;
+        double alphaMax = 90; 
         double intervall = 5;
         double[] angles= new double[(int) ((Math.abs(alphaMin)+Math.abs(alphaMax))/intervall+1)];
         
@@ -35,7 +36,7 @@ public class MainPreprocessing {
             if(!imageFile.getName().contains(".png"))
                 continue;
     
-            KeywordImage keywordimage = new KeywordImage(imageFile.getName(), imageFile, 0, 0);
+            KeywordImage keywordimage = new KeywordImage("", imageFile.getName(), imageFile, 0, 0);
             
             BufferedImage image = ImageIO.read(imageFile);
             keywordimage.setImage(image);

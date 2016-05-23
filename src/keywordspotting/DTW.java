@@ -85,27 +85,6 @@ public class DTW {
 	}
 	
 	
-	private static int findLengthOfPath(Tuple[][] path, int n, int m)
-	{
-	    int i = n-1;
-	    int j = m-1;
-	    
-	    int lengthOfPath =0 ;
-	    while(i != 0 && j != 0)
-	    {
-	        Tuple prev= path[i][j];
-
-	        
-	        i = prev.x;
-	        
-	        j = prev.y; 
-	        lengthOfPath++;
-	    }
-	    
-	    return lengthOfPath;
-	    
-	}
-	
 	
 	/**
 	 * Given two images composed of normalized vectors,

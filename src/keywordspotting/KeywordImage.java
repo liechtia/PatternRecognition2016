@@ -16,6 +16,7 @@ import utils.FtVector;
 
 public class KeywordImage implements DTWFeatureVector{
 
+    private String id; 
     private String label;
     private File file;
     private int line;
@@ -24,6 +25,11 @@ public class KeywordImage implements DTWFeatureVector{
     private BufferedImage image; 
     private ArrayList<ArrayList<Double>> featureList = new ArrayList<ArrayList<Double>>(); 
     private double meanOfStrokesPerPixel;
+    
+    public String getID()
+    {
+        return this.id;
+    }
     
     public void setMeanOfStrokesPerPixel(double m)
     {
@@ -56,11 +62,12 @@ public class KeywordImage implements DTWFeatureVector{
         return this.featureList;
     }
     
-    public KeywordImage(String label, File file, int line, int wordInLine) {
+    public KeywordImage(String id, String label, File file, int line, int wordInLine) {
         this.label  = label;
         this.file =file;
         this.line = line;
         this.wordInLine = wordInLine;
+        this.id = id; 
     }
     
     public KeywordImage(String label) {

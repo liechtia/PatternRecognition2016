@@ -77,22 +77,19 @@ public class WordImages {
              saveFolder_nonClipped.mkdir(); 
          }
          
-         try {
-             BufferedReader br = new BufferedReader(new FileReader(transcriptionFile)); 
+
+          //   BufferedReader br = new BufferedReader(new FileReader(transcriptionFile)); 
              
              /*Get alls svg files which are in the locations folder and extract the words from the 
                *corresponding document image*/
              for (File file : listOfFiles) {
                  if (file.getName().contains(".svg")) {
                      Document doc = readSVG(file.toString());
-                     extractWords(file.getName().replace("svg", "jpg"),  doc, br);   
+                     extractWords(file.getName().replace("svg", "jpg"),  doc);   
                  }
                 
              }
-         } catch (FileNotFoundException e) {
-             // TODO Auto-generated catch block
-             e.printStackTrace();
-         } 
+
      }
      
      /**
@@ -131,25 +128,34 @@ public class WordImages {
 	 * @param doc: document with the svg paths
 	 * @param transcriptionFile: file with the transcriptions (to name the word images)
 	 */
-     private void extractWords(String fileName, Document doc, BufferedReader transcriptionFile) {
+     private void extractWords(String fileName, Document doc) {
          String xpathExpression = "//path/@d";
+         String xpathIDExpression = "//path/@id";
 		 XPathFactory xpf = XPathFactory.newInstance();
 		 XPath xpath = xpf.newXPath();
 		 XPathExpression expression;
+		 
+		 XPathFactory xpfId = XPathFactory.newInstance();
+		 XPath xpathID = xpfId.newXPath();
+         XPathExpression expressionID;
+		 
 		 String saveName;
         try {
             expression = xpath.compile(xpathExpression);
+            expressionID = xpathID.compile(xpathIDExpression);
             
             /*get all svg paths from the svg file 
              * a path specifies how a box around a word was drawn 
              * it has a starting point 
              */
             NodeList svgPaths = (NodeList)expression.evaluate(doc, XPathConstants.NODESET);
+            NodeList saveNameList = (NodeList)expressionID.evaluate(doc,XPathConstants.NODESET );
+            System.out.println(saveNameList);
             
             //get for all svg paths the correspinding word from the image file
             for(int i = 0; i <  svgPaths.getLength(); i++)
             {
-                saveName = transcriptionFile.readLine();
+                saveName = saveNameList.item(i).getNodeValue();
                
                 System.out.println(saveName);
                 String svgPath = svgPaths.item(i).getNodeValue();
@@ -161,10 +167,7 @@ public class WordImages {
         } catch (XPathExpressionException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        } 
 	    
 
 	  }
