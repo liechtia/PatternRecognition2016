@@ -4,7 +4,17 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
+/**
+ *Class for binarizing the images for keyword spotting preprocessing
+ */
 public class Binarization {
+    /**
+     * @param images
+     * @param saving
+     * @param threshold
+     * 
+     * method to binarize all images and create the new files
+     */
     public void binarizeImages(String images, String saving, int threshold) {
         File sourceFolder = new File(images);
         File destinationFolder = new File(saving);
@@ -35,6 +45,13 @@ public class Binarization {
         }
     }
 
+    /**
+     * @param sourceImage
+     * @param threshold
+     * @return
+     * 
+     * binarizing method which computes black/white (true/false) per pixel
+     */
     public BufferedImage binarize(BufferedImage sourceImage, int threshold){
         BufferedImage outputImage = new BufferedImage(sourceImage.getWidth(), sourceImage.getHeight(), sourceImage.getType());
         for(int i=0;i<sourceImage.getWidth();i++) {

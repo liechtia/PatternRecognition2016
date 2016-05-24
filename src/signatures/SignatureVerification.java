@@ -11,6 +11,9 @@ import java.util.List;
 
 import keywordspotting.DTW;
 
+/**
+ * this class loads signatures, then applies dtw on them and stores it into signatureresult objects
+ */
 public class SignatureVerification {
 	private List<Integer> users;
 	private List<Signature> enrollment;
@@ -18,15 +21,25 @@ public class SignatureVerification {
 	private List<SignatureResult> results;
 	private SignatureLoader loader;
 	
+	/**
+	 * @throws IOException
+	 * 
+	 * load all the data when class is created
+	 */
 	public SignatureVerification() throws IOException{
 		loader = new SignatureLoader();
         users = loader.LoadUsers();
-        //loader.LoadGroundTruth();
+        //loader.LoadGroundTruth(); 
         enrollment = loader.LoadEnrollmentSignatures();
         verification = loader.LoadVerificationSignatures();
 	}
 	
-	public void RunVerification() throws IOException{
+	/**
+	 * @throws IOException
+	 * 
+	 * runs verification and stores result in resultfiles, then calls evaluation method
+	 */
+	public void runVerification() throws IOException{
 	   results = new ArrayList<SignatureResult>();
        for(Signature verificationSig : verification){
     	   SignatureResult result = new SignatureResult();
@@ -54,6 +67,9 @@ public class SignatureVerification {
 
 	/**
 	 * @throws IOException
+	 * 
+	 * evaluates the result objects and orders them according to accuracy
+	 *  then the desired output file is created
 	 */
 	private void evaluateResults() throws IOException {		
 		BufferedWriter output = null;

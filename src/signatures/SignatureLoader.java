@@ -8,13 +8,18 @@ import java.util.Scanner;
 
 import utils.FtVector;
 
-public class SignatureLoader {
-	private ArrayList<GroundTruth> groundTruth;
-	
-	public SignatureLoader(){
-		groundTruth = new ArrayList<GroundTruth>();
-	}
-	
+/**
+ * loads all the different files for signature verification
+ */
+public class SignatureLoader {	
+	/**
+	 * @param enrollment
+	 * @param path
+	 * @return
+	 * @throws IOException
+	 * 
+	 * loads all the signatures into a list of signature objects
+	 */
 	public List<Signature> LoadSignatures(boolean enrollment, String path) throws IOException{
 		List<Signature> sigs = new ArrayList();
 		File dir = new File(path);
@@ -76,14 +81,32 @@ public class SignatureLoader {
 		return sigs;		
 	}
 	
+	/**
+	 * @return
+	 * @throws IOException
+	 * 
+	 * loads verification signatures
+	 */
 	public List<Signature> LoadVerificationSignatures() throws IOException{
 		return LoadSignatures(false, "SignatureVerificationData/TestSignatures/verification");
 	}
 	
+	/**
+	 * @return
+	 * @throws IOException
+	 * 
+	 * loads enrollment signatures
+	 */
 	public List<Signature> LoadEnrollmentSignatures() throws IOException{
 		return LoadSignatures(true, "SignatureVerificationData/TestSignatures/enrollment");
 	}
 	
+    /**
+     * @return
+     * @throws FileNotFoundException
+     * 
+     * loads users as integers into an integer list
+     */
     public List<Integer> LoadUsers() throws FileNotFoundException {
         List<Integer> users = new ArrayList<>();
         File file = new File( "SignatureVerificationData/TestSignatures/users.txt");
@@ -95,11 +118,14 @@ public class SignatureLoader {
         return users;
     }
 
+    /**
+     * @return
+     * @throws IOException
+     * 
+     * loads ground truth
+     */
     public ArrayList<GroundTruth> LoadGroundTruth() throws IOException {
-    	if (!groundTruth.isEmpty()){
-    		return groundTruth;
-    	}
-    	
+    	ArrayList<GroundTruth> groundTruth = new ArrayList<GroundTruth>();
         groundTruth = new ArrayList<>();
         File file = new File( "SignatureVerificationData/verification-gt.txt");
         BufferedReader reader = new BufferedReader(new FileReader(file));
