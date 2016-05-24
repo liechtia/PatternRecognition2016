@@ -140,6 +140,7 @@ public class SVM {
     {
         try {
             svm.buildClassifier(train);
+            
         } catch (Exception e) {
             System.out.println("An error occured while the classfier was build");
             System.out.println("Errormessage: " + e.getMessage());
@@ -147,6 +148,11 @@ public class SVM {
             
         }
     }
+    
+    /*public ArrayList<Integer> classifyInstances()
+    {
+        
+    }*/
     
     public LibSVM getclassifier(){
     	return this.svm;

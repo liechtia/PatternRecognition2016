@@ -27,19 +27,61 @@ public class testSVM {
         public static void main(String[] args) throws IOException {
             String traningsFile = "data/trainAll.csv";
             String testFile = "data/test.csv";
+            String classifyFile = "data/mnist_test.csv"; 
                     
            //read the files and convert to arff 
-           String arffTrain = readDataAndConvertToArff(traningsFile);
-           String arffTest = readDataAndConvertToArff(testFile); 
-        	
-           System.out.println("Test RBF Kernel:");
-           callSvmToGetBestValues(arffTrain, arffTest, SVM.KERNEL_RBF_STRING);
+           String arffTrain = readDataAndConvertToArff(traningsFile, true);
+           String arffTest = readDataAndConvertToArff(testFile, true); 
            
-           //System.out.println("");
-           //System.out.println("Test Linear Kernel:");
-           //callSvmToGetBestValues(arffTrain, arffTest, SVM.KERNEL_LINEAR_STRING);
-          
-
+           //calcualtes the best parameters for the svm and tests it directly on the test set
+           // did this already found out --> c=2^2.5 and gamma = 2^-9.75 are the best values
+           //getBestParamtersForDataset(arffTrain, arffTest);
+           
+           double c = Math.pow(2, 2.5);
+           double gamma = Math.pow(2, -9.75);
+           classify(arffTrain, classifyFile,c, gamma);
+           
+        	
+        }
+        
+        private static void getBestParamtersForDataset(String arffTrain, String arffTest)
+        {
+            try {
+                callSvmToGetBestValues(arffTrain, arffTest, SVM.KERNEL_RBF_STRING);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        
+        private static void classify(String arffTrain, String classifyFile, double c, double gamma) throws IOException
+        {
+            String arffClassify = readDataAndConvertToArff(classifyFile, false); 
+            
+            DataReader reader = new DataReader(arffTrain, arffClassify);
+            
+            Instances train = reader.getTrainingData();
+            Instances classify = reader.getTestData(); 
+            
+            SVM svm = new SVM(train, classify);  
+            svm.setParameters(svm.SVM_C_SVC,  SVM.KERNEL_RBF_STRING, c, gamma);
+            svm.buildClassifier();
+            
+            FileWriter f1 = new FileWriter("results/svm_results.txt");
+            String newLine = System.getProperty("line.separator");
+            
+            for (int i = 0; i < classify.numInstances(); i++) {
+                double pred = 0;
+                try {
+                    pred = svm.getclassifier().classifyInstance(classify.instance(i));
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                
+                f1.write(i +", "+ (int) pred + newLine);
+            }
+            
         }
         
 
@@ -79,8 +121,7 @@ public class testSVM {
             System.setOut(originalStream);
             Evaluation eval = svm.evaluateModel();
             
-    		FileWriter f1 = new FileWriter("results/svm_results.txt");
-    		String newLine = System.getProperty("line.separator");
+    		
 
     		for (int i = 0; i < test.numInstances(); i++) {
     			double pred = 0;
@@ -90,7 +131,7 @@ public class testSVM {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-    			f1.write(i +", "+ test.classAttribute().value((int) pred) + newLine);
+    			
     			//System.out.print("ID: " + test.instance(i).value(0));
     			//System.out.println(", predicted: " + test.classAttribute().value((int) pred));
     			}
@@ -106,18 +147,30 @@ public class testSVM {
          * @param fileName
          * @return
          */
-        private static String readDataAndConvertToArff(String fileName)
+        private static String readDataAndConvertToArff(String fileName, boolean labeled)
         {
             int imageLength = 28;
             int imageHeight = 28;
+            int size = 28*28;
             
             String file = fileName;
-            ArrayList<Datapoint> datapoints = IO_Functions.readCsvFile(file, 0, ",");
-            
+            ArrayList<Datapoint> datapoints = IO_Functions.readCsvFile(file, 0, ",", labeled, size ); 
       
             int[] reducesValues;
             for(int i = 0; i < datapoints.size(); i++)
             {
+                
+                if(datapoints.get(i).getValues().length < size)
+                {
+                    for(int j = datapoints.get(i).getValues().length; j <= size; j++)
+                    {
+                        datapoints.get(i).addValue(j, 0);
+                    }
+                 
+                }
+                
+                
+                
                 //reduce the features for the image data 
                 reducesValues = FeatureExtraction.extracImageFeatures(imageLength, imageHeight, datapoints.get(i).getValues());
                datapoints.get(i).setValues(reducesValues);

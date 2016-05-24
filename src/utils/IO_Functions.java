@@ -29,7 +29,7 @@ public class IO_Functions {
      * @param delimiter: delimiter of the csv-File
      * @return
      */
-    public static ArrayList<Datapoint> readCsvFile(String file, int colWithClass, String delimiter)
+    public static ArrayList<Datapoint> readCsvFile(String file, int colWithClass, String delimiter, boolean labeled, int size)
     {
         BufferedReader br;
         ArrayList<Datapoint> datapoints = new ArrayList<Datapoint>();
@@ -45,9 +45,12 @@ public class IO_Functions {
                     
                    
                     lineSplit = line.split(delimiter);
-                    datapoint = new Datapoint(lineSplit.length-1); 
+                    datapoint = new Datapoint(size); 
                     try{
-                        datapoint.setLabel(Integer.parseInt(lineSplit[colWithClass]));
+                        if(!labeled)
+                            datapoint.setLabel(-1);
+                        else
+                            datapoint.setLabel(Integer.parseInt(lineSplit[colWithClass]));
                         
                         int j = 0; 
                         for(int i = 0; i < lineSplit.length; i++)
