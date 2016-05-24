@@ -62,6 +62,11 @@ public class KeywordImage implements DTWFeatureVector{
         return this.featureList;
     }
     
+    public KeywordImage(String id, String label) {
+    	this.id = id;
+    	this.label  = label;
+    }
+    
     public KeywordImage(String id, String label, File file, int line, int wordInLine) {
         this.label  = label;
         this.file =file;
