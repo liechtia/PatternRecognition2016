@@ -19,7 +19,6 @@ public class FeatureExtraction{
         */
     public static int[] extracImageFeatures(int length, int height, int[]values)
     {
-        System.out.println(length + " "+ height + " " + values.length);
         int[] histogram = new int[length+height];
    
         int blackPixels = 0;

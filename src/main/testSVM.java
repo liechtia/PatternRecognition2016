@@ -82,6 +82,8 @@ public class testSVM {
                 f1.write(i +", "+ (int) pred + newLine);
             }
             
+            f1.close();
+            
         }
         
 
