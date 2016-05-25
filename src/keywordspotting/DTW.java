@@ -13,20 +13,13 @@ import utils.FeatureVector;
 import utils.FtVector;
 import utils.Tuple;
 
+
+/**
+ * This class contains methods for computing the DTW distance between two sequences
+ * of feature vectors. The distance metric used is Euclidean distance.
+ */
+
 public class DTW {
-
-	/**
-	 * Compute the distance between testImage and all the images in trainingImages.
-	 * It returns all the images in trainingImages ordered by their ascending distance
-	 * (thus by descending similarity) from testImage.
-	 * 
-	 * @param trainingImages The training data set composed of labeled images.
-	 * @param testImage The image to be spotted.
-	 * @param band The width for the Sakoe-Chiba band (a higher number means a wider band).
-	 * @return A list of DTWResult objects. A DTWResult contains a training image and
-	 * its computed distance to testImage. The results are ordered by ascending distance.
-	 */
-
 	
 	/**
 	 * Given two images composed of normalized vectors,
@@ -83,9 +76,7 @@ public class DTW {
         
         return matrix[n-1][m-1]/(n+m);
 	}
-	
-	
-	
+
 	/**
 	 * Given two images composed of normalized vectors,
 	 * it computes the DTW distance between the images.

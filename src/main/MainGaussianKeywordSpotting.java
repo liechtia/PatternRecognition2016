@@ -17,12 +17,21 @@ import utils.DTWResult;
 import utils.FeatureVector;
 import utils.FtVector;
 
+
+/**
+ * This is the entry point for running the keyword spotting task
+ * using the features obtained by applying smoothing
+ * and edge detection.
+ * By default the result is written in file results/keywordspottingGaussian.txt.
+ */
+
 public class MainGaussianKeywordSpotting {
 
+	// Parameters
 	private final static String TRAINING_IMAGES = "KeywordSpottingData/features/gaussian_features.txt";
-    private final static String TEST_IMAGES = "KeywordSpottingData_Test/features/gaussian_features.txt";
-    private final static String KEYWORDS_FILE = "KeywordSpottingData_Test/task/keywords.txt";
-    private final static String RESULTS_FILE = "results/keywordspottingGaussian.txt"; 
+    private final static String TEST_IMAGES 	= "KeywordSpottingData_Test/features/gaussian_features.txt";
+    private final static String KEYWORDS_FILE 	= "KeywordSpottingData_Test/task/keywords.txt";
+    private final static String RESULTS_FILE 	= "results/keywordspottingGaussian.txt"; 
 	
     public static void main(String[] args) throws IOException {
         

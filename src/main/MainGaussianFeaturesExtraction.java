@@ -4,8 +4,14 @@ import java.io.IOException;
 
 import keywordspotting.PreprocessingGaussian;
 
-public class MainGaussianFeaturesExtraction {
 
+/**
+ * This is the entry point for extracting features from the images preprocessed
+ * with the Gaussian smoothing and the Laplacian edge detection.
+ */
+
+public class MainGaussianFeaturesExtraction {
+	
 	public static void main(String[] args) throws IOException {
 		
 		PreprocessingGaussian p = new PreprocessingGaussian(15, 100);

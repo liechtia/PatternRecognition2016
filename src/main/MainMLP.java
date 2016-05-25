@@ -6,7 +6,12 @@ import java.util.List;
 import classifiers.mlp.MLP;
 import weka.core.Instances;
 
-public final class LauncherMLP {
+
+/**
+ * This is the entry point for running the MLP task.
+ */
+
+public final class MainMLP {
 	
 	public static void main(String[] args) throws Exception {
 		

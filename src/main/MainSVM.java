@@ -21,7 +21,7 @@ import weka.core.Instances;
  * Class to test the SVM classifier
  *
  */
-public class testSVM {
+public class MainSVM {
 
 	
         public static void main(String[] args) throws IOException {
