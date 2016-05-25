@@ -16,14 +16,14 @@ public final class MainMLP {
 	public static void main(String[] args) throws Exception {
 		
 		// Reading train set
-		FileReader trainreader = new FileReader("data/original-train.arff");
+		FileReader trainreader = new FileReader("data/trainAll_mlp.csv.arff");
 		Instances train = new Instances(trainreader);
-		train.setClassIndex(0);
+		train.setClassIndex(train.numAttributes()-1);
 		
 		// Reading test set
-		FileReader testreader = new FileReader("data/original-test.arff");
+		FileReader testreader = new FileReader("data/mnist_test_mlp.csv.arff");
 		Instances test = new Instances(testreader);
-		test.setClassIndex(0);
+		test.setClassIndex(test.numAttributes()-1);
 
 		//List<double[]> results = MLP.experimentEpochs(0.1, "10", 10, train, test);
 		//MLP.experimentLearningRate(new Double[]{0.1, 1.0, 0.1}, 80, 110, train, 4);

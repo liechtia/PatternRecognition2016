@@ -346,9 +346,9 @@ public final class MLP {
 
 		for (int i = 0; i < test.numInstances(); i++) {
 			double pred = mlp.classifyInstance(test.instance(i));
-			f1.write(i +", "+ test.classAttribute().value((int) pred) + newLine);
+			f1.write(i +", "+ (int) pred + newLine);
 			//System.out.print("ID: " + test.instance(i).value(0));
-			//System.out.println(", predicted: " + test.classAttribute().value((int) pred));
+			System.out.println(i +", "+ (int) pred);
 			}
 		
 		System.out.println("Train error: " + trainError);
