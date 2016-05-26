@@ -40,7 +40,10 @@ public class MainSVM {
            //classify the data 
            double c = Math.pow(2, 2.5);
            double gamma = Math.pow(2, -9.75);
+          
            classify(arffTrain, classifyFile,c, gamma);
+           
+           System.out.println("Finished classifing. Results can be found in results/svm_results");
            
         	
         }

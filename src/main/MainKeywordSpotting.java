@@ -47,6 +47,8 @@ public class MainKeywordSpotting {
         
         br.close();
         
+        
+        System.out.println("Start classifing");
         //for each keyword get the image and find all images int he validation set
         for(String keywordLine : keywords)
         {
@@ -58,6 +60,10 @@ public class MainKeywordSpotting {
             writeResult(k, output, d);
         }
         output.close();
+        
+        System.out.println();
+        System.out.println("Finished classifing");
+        System.out.println("Results can be found in " + resultsFile );
 
     }
 
