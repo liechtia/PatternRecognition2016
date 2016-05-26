@@ -37,6 +37,7 @@ public class MainSVM {
            // did this already found out --> c=2^2.5 and gamma = 2^-9.75 are the best values
            //getBestParamtersForDataset(arffTrain, arffTest);
            
+           //classify the data 
            double c = Math.pow(2, 2.5);
            double gamma = Math.pow(2, -9.75);
            classify(arffTrain, classifyFile,c, gamma);
@@ -44,6 +45,12 @@ public class MainSVM {
         	
         }
         
+        /*
+         * Function to get the best parameters for the dataset
+         * The testing is done with a 10-CV on the training set
+         * After this the test set is tested with these best parameters as wel
+         * All results are saved in the folder svm 
+         */
         private static void getBestParamtersForDataset(String arffTrain, String arffTest)
         {
             try {
@@ -54,6 +61,14 @@ public class MainSVM {
             }
         }
         
+        /**
+         * Function to classify a given set of data 
+         * @param arffTrain - training data 
+         * @param classifyFile - classify data
+         * @param c - c-Value to use
+         * @param gamma -Gamma Value to use 
+         * @throws IOException
+         */
         private static void classify(String arffTrain, String classifyFile, double c, double gamma) throws IOException
         {
             String arffClassify = readDataAndConvertToArff(classifyFile, false); 

@@ -2,55 +2,26 @@ package keywordspotting;
 
 
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
 import utils.Distance;
 
-
-public class KeywordsSpotting {
-
-   /* private KeywordImage template;
-    BufferedImage imageTemplate;
-    private int baselineTemplate;
-    private String classified = "";
-    private int countDescenderTemplate = 0; 
-   
-    public KeywordImage getTemplate() {return this.template;}
-    
-    public String getClassified(){return this.classified;}
-    
-   public ArrayList<String> labels;
-   public   int[] votes;
-    
-   
-   private  HashMap<String, ArrayList<KeywordImage>> trainingHashMap = new  HashMap<String, ArrayList<KeywordImage>>();
-    private HashMap<String, ArrayList<KeywordImage>> validHashMap = new  HashMap<String, ArrayList<KeywordImage>>();
-    private ArrayList<KeywordImage> files = new ArrayList<KeywordImage>();
-    
-    private BufferedWriter outputWithLabel = null;
-    private  ArrayList<KeywordImage> trainingImages;
-    private ArrayList<KeywordImage> validImages;
-    
-   
-   private String keywordFile;
-   private ArrayList<String> keywords;*/
-    
+/**
+ * Class to spot keyword images for a template image
+ *
+ */
+public class KeywordsSpotting {    
     private String keyword;
     private KeywordImage imageFile; 
     private ArrayList<KeywordImage>  testset = new ArrayList<KeywordImage>();
+    
+    public String getKeyword() { return this.keyword;}
     
     public KeywordsSpotting(String id, String keyword, File imageFile) throws IOException {
         this.keyword = keyword;
@@ -62,7 +33,10 @@ public class KeywordsSpotting {
 
     }
     
-
+    /**
+     * Read the files for the images
+     * @param testsetPath
+     */
     public void getTestKeywordImages(String testsetPath)
     {
        
@@ -103,6 +77,12 @@ public class KeywordsSpotting {
            
     }
     
+    /**
+     * Spot the keywords
+     * The distance between the template and all other images in the test set is calculated and sorted in 
+     * descending order
+     * @return
+     */
     public ArrayList<Distance> spotKeywords()
     {
         ArrayList<Distance> results = new ArrayList<Distance>();
@@ -127,7 +107,10 @@ public class KeywordsSpotting {
     }
     
 
-    
+    /**
+     * Norm the feature vectors
+     * @param image
+     */
     private static void normFeatures( KeywordImage image)
     {
             image.formFeatureArray();
@@ -135,6 +118,10 @@ public class KeywordsSpotting {
     }
   
 
+    /**
+     * Calculate the feature vectors
+     * @param im
+     */
     private static void getFeatures(KeywordImage im)
     {
       
@@ -150,46 +137,6 @@ public class KeywordsSpotting {
         }
     
     }
-    private static void addImage(HashMap<String, ArrayList<KeywordImage>> list, String label, KeywordImage im)
-    {
-        if(list.containsKey(label))
-        {
-            list.get(label).add(im);
-        }
-        else
-        {
-            list.put(label, new ArrayList<>(Arrays.asList(im)));
-        }
-    }
-    
-    private static ArrayList<String> readFile(File f)
-    {
-        ArrayList<String> files = new ArrayList<String>();
-        
-        try {
-            BufferedReader br= new BufferedReader(new FileReader(f));
-            String line;
-           
-            while((line = br.readLine()) != null)
-            {
-                files.add(line);
-            }
-            
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        
-        return files; 
-        
-        
-    }
-    
-    
-  
 }
 
 class CustomComparator implements Comparator<Distance> {

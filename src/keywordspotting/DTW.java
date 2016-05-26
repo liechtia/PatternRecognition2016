@@ -1,17 +1,8 @@
 package keywordspotting;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import utils.DTWFeatureVector;
-import utils.DTWResult;
-import utils.FeatureVector;
 import utils.FtVector;
-import utils.Tuple;
 
 
 /**

@@ -1,9 +1,6 @@
 package keywordspotting;
 
 
-
-
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
@@ -14,6 +11,10 @@ import utils.DTWFeatureVector;
 import utils.FeatureVector;
 import utils.FtVector;
 
+/**
+ * Class to represent a keyword image
+ *
+ */
 public class KeywordImage implements DTWFeatureVector{
 
     private String id; 
@@ -116,6 +117,9 @@ public class KeywordImage implements DTWFeatureVector{
         this.image = image;
     }
 
+    /*
+     * Caluclate the features with a sliding window approach 
+     */
     public void slidingWindow()
     {
         /*   BufferedImage image = ImageIO.read(file);*/
@@ -126,7 +130,6 @@ public class KeywordImage implements DTWFeatureVector{
             
             
             int[][] pixels = new int[width][height];
-            int[] p = new int[(width*height)+1];
 
             for( int i = 0; i < width; i++ )
                 for( int j = 0; j < height; j++ )
@@ -154,7 +157,9 @@ public class KeywordImage implements DTWFeatureVector{
     }
         
 
-    
+    /*
+     * Calculate the features for one column 
+     */
     private FeatureVector getFeatures(int[] vector)
     {
         
@@ -215,10 +220,7 @@ public class KeywordImage implements DTWFeatureVector{
             upperContour = lowerContour; 
         
         numberOfPixelsBetweenLcUc = upperContour - lowerContour; 
-        
-      //  double fractionOfBlackPixels = numberOfBlackPixels / (vector.length+ 0.0); 
-        //double fractionUcLc = numberOfPixelsBetweenLcUc /(vector.length+0.0);
-
+       
         
         FeatureVector fV  = new FeatureVector();
         fV.setBwTransistions( bwTransitions);
@@ -285,6 +287,7 @@ public class KeywordImage implements DTWFeatureVector{
         
         
     }
+    
     
     public static BufferedImage getImageFromArray(int[] pixels, int width, int height) {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);

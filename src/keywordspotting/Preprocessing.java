@@ -11,14 +11,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
-
-import org.apache.commons.imaging.examples.SkewCorrection;
-
-import utils.ConnectedComponent;
 import utils.Histogram;
 import utils.LinearRegression;
 import utils.Tuple;
 
+/**
+ * Class to do the prepocessing of the images
+ *
+ */
 public class Preprocessing {
 
     private String outputpath;
@@ -33,9 +33,12 @@ public class Preprocessing {
     {
         images.add(image);
 
-        
     }
     
+    /**
+     * Save the preprocess images
+     * @throws IOException
+     */
     public void writeImages() throws IOException
     {
         for(int i = 0; i < images.size(); i++)
@@ -47,6 +50,9 @@ public class Preprocessing {
         
     }
     
+    /**
+     * Correct the skew of the image
+     */
     public void correctSkewImages()
     {
         
@@ -59,10 +65,64 @@ public class Preprocessing {
 
     }
     
+    public void binarizeImages(int treshold)
+    {
+
+        
+        for(KeywordImage image : images)
+        {
+            BufferedImage img = image.getImage();
+            image.setImage(binarize(img, treshold));
+        }
+        
+ 
+    }
+    
+    public void correctSlantImages(double[] angles)
+    {
+        
+        for(KeywordImage image : images)
+        {
+            BufferedImage img = image.getImage();
+            image.setImage(correctSlant(img, angles));
+            
+        }
+
+    }
+    
+    public void cutColumnsImages()
+    {  
+        for(KeywordImage image : images)
+        {
+            BufferedImage img = image.getImage();
+            image.setImage(cutColumns(img));
+           
+        }
+    }
+
+
+    
+    public void scaleVerticalImages()
+    {   
+        for(int i = 0;i < images.size(); i++)
+        {
+            KeywordImage image = images.get(i);
+            System.out.println(image.getFile().getName());
+            BufferedImage img = image.getImage();
+            
+            BufferedImage imNew = scaleVertical(img, i);
+            if(imNew != null)
+                image.setImage(imNew);
+            else
+                images.remove(i);    
+        }
+
+    }
+    
     /**
      * Correct the skew angle
      * 1. Find all lowest pixel in the image
-     * 2. Sort this one out which are away from the average than a certain trehsold (to get outliers away)
+     * 2. Sort this one out which are away from the average than a certain treshold (to get outliers away)
      * 3. Do linear regression on the resulting points --> y=a*x+b
      * 4. angle = atan(a) 
      * @param image
@@ -136,95 +196,6 @@ public class Preprocessing {
     }
     
     
-
-    private BufferedImage correctSkew(BufferedImage image)
-    {
-        
-        double skewAngle =  SkewCorrection.doIt(image);
-    
-        
-        BufferedImage returnImage = new BufferedImage(image.getWidth()+50, image.getHeight(), BufferedImage.TYPE_INT_RGB);
-        
-        Graphics2D g2d = returnImage.createGraphics();
-        
-        g2d.setPaint (Color.white);
-        g2d.fillRect ( 0, 0, returnImage.getWidth(), returnImage.getHeight() );
-        g2d.rotate(Math.toRadians(skewAngle), returnImage.getWidth() / 2, returnImage.getHeight() / 2);
-        g2d.drawImage(image, 0, 0, null);
-        g2d.dispose();
-        
-        return returnImage;
-    }
-    
-    
-
-    
-    public void binarizeImages(int treshold)
-    {
-
-        
-        for(KeywordImage image : images)
-        {
-            BufferedImage img = image.getImage();
-            image.setImage(binarize(img, treshold));
-        }
-        
- 
-    }
-    
-    public void correctSlantImages(double[] angles)
-    {
-        
-        for(KeywordImage image : images)
-        {
-            BufferedImage img = image.getImage();
-            image.setImage(correctSlant(img, angles));
-            
-        }
-
-    }
-    
-    public void cutColumnsImages()
-    {  
-        for(KeywordImage image : images)
-        {
-            BufferedImage img = image.getImage();
-            image.setImage(cutColumns(img));
-           
-        }
-
-    }
-    
-    public void getComponentsImages()
-    {  
-        for(KeywordImage image : images)
-        {
-            BufferedImage img = image.getImage();
-            image.setImage(getConnectedComponents(img));
-         }
-
-    }
-    
-    public void scaleVerticalImages()
-    {
-        
-        for(int i = 0;i < images.size(); i++)
-        {
-            KeywordImage image = images.get(i);
-            System.out.println(image.getFile().getName());
-            BufferedImage img = image.getImage();
-            
-            BufferedImage imNew = scaleVertical(img, i);
-            if(imNew != null)
-                image.setImage(imNew);
-            else
-                images.remove(i);
-           
-        }
-
-    }
-    
-
     private static  BufferedImage resizeImage(BufferedImage originalImage, int type, int width, int height){
         BufferedImage resizedImage = new BufferedImage(width, height, type);
         Graphics2D g = resizedImage.createGraphics();
@@ -232,14 +203,13 @@ public class Preprocessing {
         g.dispose();
             
         return resizedImage;
-        }
+      }
     
     /**
-     * TODO: scale the image vertical 
-     * TRIED:
-     * estimate lower and upper baseline
-     * split image in the areas (top to upper baseline, upper baseline to lower baseline, lower baseine to bottom)
-     * resize every area to 20 pixels 
+     * Scale the image vertical 
+     * Approach:
+     * Find the upper and lower baseline
+     * This gives the areas in the images which are all scaled to the samze size 
      * @param imageClipped
      * @param img
      * @return
@@ -266,10 +236,9 @@ public class Preprocessing {
              }
              
          }
-         //System.out.println("ymax=" + yMax);
+
          //calculate average number of pixels in each row
          int average  = 0;
-         int numberOfRows = 0;
          int maxTransitions = 0; 
          for(int i = 0; i < imageClipped.getHeight(); i++)
          { 
@@ -366,19 +335,9 @@ public class Preprocessing {
                 lowerBaseLineY = i;
             }
         }
-        
-      /*   System.out.println("height: " + imageClipped.getHeight());
-         System.out.println("ymax  " +yMax);
-         System.out.println("average " + average);
-         System.out.println(upperBaseLineY);
-         System.out.println(lowerBaseLineY);*/
          
          int type = imageClipped.getType() == 0? BufferedImage.TYPE_INT_ARGB : imageClipped.getType();
          int heightArea = 20;
-         
-         System.out.println(imageClipped.getHeight());
-         System.out.println(upperBaseLineY);
-         System.out.println(lowerBaseLineY);
          
          BufferedImage area1 ;
          if(upperBaseLineY > 0)
@@ -404,7 +363,6 @@ public class Preprocessing {
          }
          else
          {
-             System.out.println("no area2");
              area2 = new BufferedImage(imageClipped.getWidth(), heightArea, BufferedImage.TYPE_INT_ARGB); 
          }
               
@@ -415,13 +373,9 @@ public class Preprocessing {
          }
          else
          {
-             System.out.println("no area3");
              area3 = new BufferedImage(imageClipped.getWidth(), heightArea, BufferedImage.TYPE_INT_ARGB);
          }
              
-           
-
-         
          BufferedImage combined = new BufferedImage(imageClipped.getWidth(), 3*heightArea, BufferedImage.TYPE_INT_ARGB);
 
               // paint both images, preserving the alpha channels
@@ -534,11 +488,6 @@ public class Preprocessing {
             int widthNew = widthEnd-widthBegin;
             int heightNew = img.getHeight() - heightBegin - (img.getHeight() - lowerHeightBegin);
             
-            System.out.println(heightNew);
-            System.out.println(heightBegin);
-            System.out.println(lowerHeightBegin);
-            //System.out.println(heightNew - lowerHeightBegin);
-            System.out.println("--");
             BufferedImage imageClipped= img.getSubimage(widthBegin, heightBegin, widthNew, heightNew);
                 
             return imageClipped;
@@ -546,7 +495,8 @@ public class Preprocessing {
     
     /**
      * Correct the slant
-     * 1. Rotate image whichone of the angles from the array
+     * Approach:
+     * 1. Rotate image which one of the angles from the array
      * 2. Calculate resulting histogram 
      * 3. Histogram with the biggest peeks is the winner --> correct slant 
      * 4. Correct the slant 
@@ -619,6 +569,7 @@ public class Preprocessing {
     
     /**
      * Binarize the image 
+     * Approach:
      * Every pixel which is below the treshold get converted to black 
      * @param sourceImage
      * @param threshold
@@ -657,91 +608,7 @@ public class Preprocessing {
     }
     
    
-    
-    private BufferedImage getConnectedComponents(BufferedImage image)
-    {
-        ArrayList<ConnectedComponent> components = new ArrayList<ConnectedComponent>();
-        
-        
-        BufferedImage outputImage = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
-        
-        int black = new Color(0,0,0).getRGB(); 
-        
-        for(int i = 0;i  < image.getWidth(); i++)
-        {
-            for(int j =0; j < image.getHeight(); j++)
-            {
-                outputImage.setRGB(i, j, new Color(255,255,255).getRGB());
-                
 
-                if(image.getRGB(i, j)==black)
-                {
-                    boolean findComponent = false;
-                    Tuple pixel = new Tuple(i,j);
-                    
-                    for(ConnectedComponent c : components)
-                        {
-                        
-                           if(checkIfPixelsBelongsToComponent(c, pixel))
-                            {
-                                    c.pixels.add(pixel);
-                                    c.pixelPlus();
-                                    findComponent = true;
-                                    break;
-                                }
-                        }
-                    
-                    if(!findComponent)
-                    {
-                        ConnectedComponent cc = new ConnectedComponent();
-                        components.add(cc);
-                        cc.pixels.add(pixel);
-                        
-                    }
-                }
-            }
-        }
-
-
-        
-        for(ConnectedComponent c : components)
-        {
-            if(c.pixels.size() < 70){
-                for(Tuple pixel : c.pixels)
-                {
-                   outputImage.setRGB(pixel.x, pixel.y, new Color(255,255,255).getRGB());
-                }
-            }
-            
-            else
-            { 
-                for(Tuple pixel : c.pixels)
-                {
-                   outputImage.setRGB(pixel.x, pixel.y, black);
-                }
-            }
-          
-
-        }
-        
-        return outputImage; 
-        
-    }
-    
-    
-    private boolean checkIfPixelsBelongsToComponent(ConnectedComponent component, Tuple pixel)
-    {
-        for(Tuple t : component.pixels)
-       {
-            if(Math.abs(t.y-pixel.y) <= 2 && ((pixel.x - t.x) == 1))
-            {
-                return true;
-            }
-       }
-        
-        return false; 
-    }
-    
 
 
 }
